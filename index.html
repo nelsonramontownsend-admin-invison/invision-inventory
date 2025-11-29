@@ -287,23 +287,43 @@
             });
         }
 
-        function sendEmail() {
+   function sendEmail() {
+            // 1. GET FORM DATA
             const clientName = document.getElementById('clientName').value || "Client";
             const clientEmail = document.getElementById('clientEmail').value;
             const returnDate = document.getElementById('returnDate').value || "TBD";
-            const myEmail = "me@invision.com"; // Replace later
             
-            let body = `RENTAL MANIFEST\nClient: ${clientName}\nReturn: ${returnDate}\n----------------\n\n`;
-            Object.keys(cart).forEach(id => {
+            // 2. HARDCODE INTERNAL EMAILS HERE (Replace these with real ones!)
+            const myEmail = "nelson.ramon.townsend@gmail.com"; 
+            const bossEmail = "nelson.townsend@live.com";
+            
+            // 3. BUILD THE MESSAGE BODY
+            let body = `RENTAL MANIFEST\n`;
+            body += `Client: ${clientName}\n`;
+            body += `Return Date: ${returnDate}\n`;
+            body += `--------------------------------\n\n`;
+            
+            // Add items from cart
+            const cartIds = Object.keys(cart);
+            if(cartIds.length === 0) { alert("Cart is empty!"); return; }
+            
+            cartIds.forEach(id => {
                 const item = inventory.find(i => (i.sn !== 'N/A' ? i.sn : i.desc) === id);
                 const data = cart[id];
                 body += `[x${data.qty}] ${item.category} ${item.desc}\n`;
-                if(data.notes) body += `Note: ${data.notes}\n`;
+                if(data.notes) body += `    Note: ${data.notes}\n`;
+                body += `\n`;
             });
             
+            body += `--------------------------------\n`;
+            body += `Signed by: ${clientName}`;
+
+            // 4. GENERATE THE LINK (Using BCC so it's a "Secret" copy)
             const subject = encodeURIComponent(`Gear Rental - ${clientName}`);
             const bodyEnc = encodeURIComponent(body);
-            window.location.href = `mailto:${clientEmail}?cc=${myEmail}&subject=${subject}&body=${bodyEnc}`;
+            
+            // This line opens the Mail app with YOU and BOSS in the BCC field
+            window.location.href = `mailto:${clientEmail}?bcc=${myEmail},${bossEmail}&subject=${subject}&body=${bodyEnc}`;
         }
 
         function handleSearch() {

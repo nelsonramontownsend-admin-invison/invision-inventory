@@ -226,7 +226,7 @@
             
             <div class="signature-box">Sign Here</div>
             <div class="action-buttons">
-                <button class="btn-secondary" onclick="window.print()">🖨 Print</button>
+                <button class="btn-secondary" onclick="window.print()">🖨 Print / PDF</button>
                 <button class="btn-email" onclick="sendEmail()">✉️ Email</button>
                 <button class="btn-primary" onclick="alert('Checkout Complete!')">Done</button>
             </div>
@@ -340,10 +340,10 @@
             const clientEmail = document.getElementById('clientEmail').value;
             const returnDate = document.getElementById('returnDate').value || "TBD";
             
-            // --- EMAILS UPDATED ---
+            // --- EMAILS HARDCODED ---
             const myEmail = "nelson.ramon.townsend@gmail.com"; 
             const bossEmail = "nelson.townsend@live.com";
-            // ---------------------
+            // ------------------------
 
             let body = `RENTAL MANIFEST\nClient: ${clientName}\nReturn: ${returnDate}\n----------------\n\n`;
             

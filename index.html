@@ -20,17 +20,65 @@
         .view { display: none; }
         .view.active { display: block; }
 
-        /* HEADER */
-        .app-header { background: rgba(28, 28, 30, 0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); padding: 10px 15px; transition: all 0.3s ease; }
+        /* HEADER - IMPROVED FOR IPAD */
+        .app-header { 
+            background: rgba(28, 28, 30, 0.95); 
+            backdrop-filter: blur(10px); 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            border-bottom: 1px solid var(--border); 
+            padding: 15px; 
+            transition: all 0.3s ease; 
+        }
         
-        /* HEADER LAYOUT FIX */
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; width: 100%; }
-        .logo-container { flex: 1; display: flex; align-items: center; justify-content: flex-start; }
-        .company-logo { max-height: 45px; max-width: 200px; object-fit: contain; }
-        .logo-fallback { font-size: 18px; font-weight: 900; color: var(--text); text-transform: uppercase; letter-spacing: -0.5px; }
+        .header-top { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 15px; 
+            width: 100%; 
+            min-height: 45px;
+        }
         
-        /* ADMIN LOCK ICON */
-        .admin-lock { font-size: 24px; cursor: pointer; padding: 5px; color: var(--gray); flex-shrink: 0; margin-left: 15px; } 
+        .logo-container { 
+            flex: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: flex-start; 
+            overflow: hidden; 
+        } 
+        
+        .company-logo { 
+            max-height: 40px; 
+            max-width: 60px; 
+            object-fit: contain; 
+            margin-right: 10px; 
+        }
+        
+        /* BRAND NAME STYLE */
+        .brand-name { 
+            font-family: 'Arial Black', sans-serif; 
+            font-size: 20px; 
+            font-weight: 900; 
+            color: black; 
+            -webkit-text-stroke: 1px var(--primary); 
+            text-transform: uppercase; 
+            letter-spacing: -0.5px;
+            white-space: nowrap; 
+        }
+        
+        /* LOCK ICON */
+        .admin-lock { 
+            font-size: 24px; 
+            cursor: pointer; 
+            padding: 10px; 
+            color: var(--gray); 
+            flex-shrink: 0; 
+            margin-left: 15px; 
+            background: rgba(255,255,255,0.05); 
+            border-radius: 50%;
+        } 
         .admin-lock.unlocked { color: var(--primary); }
 
         /* CONTROLS */
@@ -65,7 +113,7 @@
         .admin-only { display: none !important; }
         body.admin-mode .admin-only { display: flex !important; }
 
-        /* EDIT BTN ALIGNMENT FIX */
+        /* EDIT BTN */
         .edit-btn { padding: 10px; color: var(--gray); font-size: 18px; cursor: pointer; margin-left: auto; flex-shrink: 0; }
         .edit-btn:hover { color: var(--primary); }
 
@@ -139,7 +187,7 @@
         <div class="header-top">
             <div class="logo-container">
                 <img src="logo.png" alt="Invision Media" class="company-logo" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';">
-                <span id="logo-text" class="logo-fallback" style="display:none;">INVISION MEDIA</span>
+                <span id="logo-text" class="brand-name">INVISION MEDIA</span>
             </div>
             <div id="adminLock" class="admin-lock" onclick="toggleAdminMode()">🔒</div>
         </div>
@@ -287,42 +335,32 @@
             });
         }
 
-   function sendEmail() {
-            // 1. GET FORM DATA
+        function sendEmail() {
             const clientName = document.getElementById('clientName').value || "Client";
             const clientEmail = document.getElementById('clientEmail').value;
             const returnDate = document.getElementById('returnDate').value || "TBD";
             
-            // 2. HARDCODE INTERNAL EMAILS HERE (Replace these with real ones!)
+            // --- EMAILS UPDATED ---
             const myEmail = "nelson.ramon.townsend@gmail.com"; 
             const bossEmail = "nelson.townsend@live.com";
+            // ---------------------
+
+            let body = `RENTAL MANIFEST\nClient: ${clientName}\nReturn: ${returnDate}\n----------------\n\n`;
             
-            // 3. BUILD THE MESSAGE BODY
-            let body = `RENTAL MANIFEST\n`;
-            body += `Client: ${clientName}\n`;
-            body += `Return Date: ${returnDate}\n`;
-            body += `--------------------------------\n\n`;
-            
-            // Add items from cart
             const cartIds = Object.keys(cart);
             if(cartIds.length === 0) { alert("Cart is empty!"); return; }
-            
+
             cartIds.forEach(id => {
                 const item = inventory.find(i => (i.sn !== 'N/A' ? i.sn : i.desc) === id);
                 const data = cart[id];
                 body += `[x${data.qty}] ${item.category} ${item.desc}\n`;
-                if(data.notes) body += `    Note: ${data.notes}\n`;
-                body += `\n`;
+                if(data.notes) body += `Note: ${data.notes}\n`;
             });
             
-            body += `--------------------------------\n`;
-            body += `Signed by: ${clientName}`;
+            body += `\n----------------\nSigned by: ${clientName}`;
 
-            // 4. GENERATE THE LINK (Using BCC so it's a "Secret" copy)
             const subject = encodeURIComponent(`Gear Rental - ${clientName}`);
             const bodyEnc = encodeURIComponent(body);
-            
-            // This line opens the Mail app with YOU and BOSS in the BCC field
             window.location.href = `mailto:${clientEmail}?bcc=${myEmail},${bossEmail}&subject=${subject}&body=${bodyEnc}`;
         }
 

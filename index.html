@@ -20,6 +20,7 @@
             --input-bg: #2C2C2E;
             --danger: #FF453A;
             --warning: #FF9F0A;
+            --success: #32D74B;
         }
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; padding-bottom: 90px; -webkit-tap-highlight-color: transparent; }
         .view { display: none; }
@@ -31,8 +32,14 @@
         .logo-container { flex: 1; display: flex; align-items: center; justify-content: flex-start; overflow: hidden; } 
         .company-logo { max-height: 40px; max-width: 60px; object-fit: contain; margin-right: 10px; }
         .brand-name { font-family: 'Arial Black', sans-serif; font-size: 20px; font-weight: 900; color: black; -webkit-text-stroke: 1px var(--primary); text-transform: uppercase; letter-spacing: -0.5px; white-space: nowrap; }
-        .admin-lock { font-size: 24px; cursor: pointer; padding: 10px; color: var(--gray); flex-shrink: 0; margin-left: 15px; background: rgba(255,255,255,0.05); border-radius: 50%; } 
-        .admin-lock.unlocked { color: var(--primary); }
+        
+        /* AUTH BUTTON STYLE */
+        .auth-btn { 
+            font-size: 14px; font-weight: 600; cursor: pointer; padding: 8px 16px; 
+            color: var(--primary); border: 1px solid var(--primary); border-radius: 20px; 
+            background: rgba(100, 210, 255, 0.1); transition: all 0.2s;
+        }
+        .auth-btn.logged-in { border-color: var(--danger); color: var(--danger); background: rgba(255, 69, 58, 0.1); }
 
         /* CONTROLS */
         #top-controls { display: block; overflow: hidden; transition: max-height 0.3s ease; }
@@ -58,9 +65,10 @@
         .item-meta { font-size: 12px; color: var(--gray); font-family: monospace; display: flex; gap: 8px; align-items: center; margin-top: 2px; }
         .qty-badge { background: var(--input-bg); color: var(--text); padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 10px; border: 1px solid var(--border); }
 
-        /* ADMIN */
+        /* ADMIN VISIBILITY */
         .admin-only { display: none !important; }
         body.admin-mode .admin-only { display: flex !important; }
+        
         .edit-btn { padding: 10px; color: var(--gray); font-size: 18px; cursor: pointer; margin-left: auto; flex-shrink: 0; }
         .edit-btn:hover { color: var(--primary); }
         .check-circle { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--gray); margin-right: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
@@ -69,16 +77,16 @@
 
         /* UI ELEMENTS */
         .fab { position: fixed; bottom: 100px; right: 20px; width: 56px; height: 56px; background: var(--primary); border-radius: 50%; color: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 12px rgba(100, 210, 255, 0.4); cursor: pointer; z-index: 150; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card); width: 90%; max-width: 400px; padding: 20px; border-radius: 16px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border); color: var(--text); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--card); width: 90%; max-width: 400px; padding: 25px; border-radius: 16px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border); color: var(--text); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
         .form-label { display: block; font-size: 12px; font-weight: bold; color: var(--gray); margin-bottom: 5px; margin-top: 10px; }
         .form-input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 8px; margin-bottom: 5px; box-sizing: border-box; }
         .btn-primary { background: var(--primary); color: var(--bg); border: none; padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 2; }
         .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; }
         .btn-email { background: #34C759; color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; }
-        .btn-danger { background: var(--warning); color: black; border: none; padding: 10px; margin-top: 10px; width: 100%; font-weight: bold; border-radius: 8px; cursor: pointer; }
-        
+        .btn-danger { background: var(--danger); color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; }
+
         .image-preview-box { width: 100%; height: 150px; background: var(--bg); border: 2px dashed var(--border); border-radius: 8px; margin-top: 5px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; cursor: pointer; }
         .image-preview-box img { width: 100%; height: 100%; object-fit: contain; display: none; }
         .image-preview-text { color: var(--gray); font-size: 14px; font-weight: 500; pointer-events: none; }
@@ -108,7 +116,7 @@
             .app-header { position: relative; border: none; padding: 20px; }
             .logo-fallback { color: black; }
             .company-logo { filter: none; }
-            #top-controls, .bottom-nav, .fab, .edit-btn, .remove-btn, .stepper-btn, .btn-primary, .btn-secondary, .btn-email, #view-inventory, .modal, .admin-lock { display: none !important; }
+            #top-controls, .bottom-nav, .fab, .edit-btn, .remove-btn, .stepper-btn, .btn-primary, .btn-secondary, .btn-email, #view-inventory, .modal, .auth-btn { display: none !important; }
             #view-checkout { display: block !important; }
             .manifest-list, .checkout-section { background: white; border: none; margin: 0; padding: 0; box-shadow: none; color: black; }
             .manifest-item { border-bottom: 1px solid #ccc; padding: 10px 0; break-inside: avoid; }
@@ -130,10 +138,9 @@
                 <img src="logo.png" alt="Invision Media" class="company-logo" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';">
                 <span id="logo-text" class="brand-name">INVISION MEDIA</span>
             </div>
-            <div id="adminLock" class="admin-lock" onclick="toggleAdminMode()">🔒</div>
+            <button id="authBtn" class="auth-btn" onclick="openLoginModal()">Log In</button>
         </div>
         
-       
         <div id="top-controls">
             <div class="segment-control">
                 <button class="segment-btn active" onclick="filterType('ALL', this)">All</button>
@@ -193,8 +200,21 @@
             <label class="form-label">Quantity</label>
             <input type="number" id="itemQty" class="form-input" placeholder="Qty" value="1">
             <div class="modal-buttons">
-                <button class="btn-primary" style="background:var(--input-bg); color:var(--text);" onclick="closeModal()">Cancel</button>
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
                 <button class="btn-primary" onclick="saveItem()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content" style="max-width: 320px; text-align: center;">
+            <h2 style="margin-top:0; margin-bottom:20px;">Staff Login</h2>
+            <input type="email" id="loginEmail" class="form-input" placeholder="Email Address">
+            <input type="password" id="loginPassword" class="form-input" placeholder="Password">
+            <div id="loginError" style="color:var(--danger); font-size:13px; margin-top:10px; display:none;"></div>
+            <div class="modal-buttons" style="flex-direction: column;">
+                <button class="btn-primary" onclick="handleLogin()">Log In</button>
+                <button class="btn-secondary" onclick="closeLoginModal()">Cancel</button>
             </div>
         </div>
     </div>
@@ -209,13 +229,11 @@
         </div>
     </div>
 
-    <script src="inventory.js?v=2"></script>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
         import { getFirestore, collection, onSnapshot, addDoc, updateDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
-        // --- YOUR FIREBASE KEYS ---
         const firebaseConfig = {
           apiKey: "AIzaSyDY7EF8qv2HFp_1k1q4qTBOFRvyJQxS0bg",
           authDomain: "invision-inventory.firebaseapp.com",
@@ -226,50 +244,71 @@
           measurementId: "G-ZGJ8SVC8T6"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
         // GLOBAL APP STATE
-        window.appData = []; // This holds the LIVE Cloud data
+        window.appData = []; 
         window.cart = {}; 
         window.currentTypeFilter = 'ALL';
         window.editingId = null; 
         window.tempImageURL = "";
         window.isAdmin = false;
         
-        // --- 1. SEED FUNCTION (ONE TIME USE) ---
-        window.uploadLocalDataToCloud = async function() {
-            if(!confirm("Are you sure? This will upload all items from inventory.js to the Cloud Database.")) return;
-            
-            const localData = window.inventory || []; 
-            if(localData.length === 0) { alert("No local data found!"); return; }
-
-            let count = 0;
-            alert("Starting upload... please wait.");
-            
-            for(let item of localData) {
-                try {
-                    // Create clean object
-                    const newItem = {
-                        category: item.category || "",
-                        desc: item.desc || "",
-                        image: item.image || "",
-                        qty: item.qty || "1",
-                        sn: item.sn || "N/A",
-                        status: item.status || "OK",
-                        type: item.type || "Camera"
-                    };
-                    await addDoc(collection(db, "gear"), newItem);
-                    count++;
-                } catch(e) {
-                    console.error("Error uploading item", item, e);
-                }
+        // --- AUTH LISTENER (THE SECURITY GUARD) ---
+        onAuthStateChanged(auth, (user) => {
+            const btn = document.getElementById('authBtn');
+            if (user) {
+                // User is logged in
+                window.isAdmin = true;
+                document.body.classList.add('admin-mode');
+                btn.innerText = "Log Out";
+                btn.classList.add('logged-in');
+                btn.onclick = handleLogout;
+                console.log("Logged in as:", user.email);
+            } else {
+                // User is logged out
+                window.isAdmin = false;
+                document.body.classList.remove('admin-mode');
+                btn.innerText = "Log In";
+                btn.classList.remove('logged-in');
+                btn.onclick = openLoginModal;
             }
-            alert(`Success! Uploaded ${count} items to the cloud.`);
+            renderList(); // Re-render to show/hide pencils
+        });
+
+        // --- AUTH FUNCTIONS ---
+        window.openLoginModal = () => {
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('loginError').style.display = 'none';
+        }
+        
+        window.closeLoginModal = () => {
+            document.getElementById('loginModal').style.display = 'none';
         }
 
-        // --- 2. LISTEN TO CLOUD (REAL-TIME) ---
+        window.handleLogin = async () => {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPassword').value;
+            const errBox = document.getElementById('loginError');
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                closeLoginModal();
+            } catch (error) {
+                errBox.innerText = "Error: " + error.message;
+                errBox.style.display = 'block';
+            }
+        }
+
+        window.handleLogout = async () => {
+            if(confirm("Log out now?")) {
+                await signOut(auth);
+            }
+        }
+
+        // --- FIRESTORE LISTEN ---
         const q = query(collection(db, "gear"), orderBy("category"));
         onSnapshot(q, (snapshot) => {
             window.appData = snapshot.docs.map(doc => ({
@@ -279,8 +318,10 @@
             renderList();
         });
 
-        // --- 3. SAVE ITEM (WRITE TO CLOUD) ---
+        // --- SAVE ITEM ---
         window.saveItem = async function() {
+            if(!window.isAdmin) return; // Security Check
+
             const newItem = {
                 type: document.getElementById('itemType').value,
                 category: document.getElementById('itemCategory').value,
@@ -296,11 +337,9 @@
 
             try {
                 if (window.editingId) {
-                    // Update existing
                     const itemRef = doc(db, "gear", window.editingId);
                     await updateDoc(itemRef, newItem);
                 } else {
-                    // Create new
                     await addDoc(collection(db, "gear"), newItem);
                 }
                 closeModal();
@@ -311,14 +350,13 @@
             }
         }
 
-        // --- UI FUNCTIONS ---
-        
+        // --- UI RENDER ---
         window.renderList = function() {
             const listContainer = document.getElementById('inventory-list');
             listContainer.innerHTML = '';
             
             if (window.appData.length === 0) { 
-                listContainer.innerHTML = '<div style="padding:20px; text-align:center; color:var(--gray);">Loading cloud data...<br>(If empty, check Admin Panel)</div>'; 
+                listContainer.innerHTML = '<div style="padding:20px; text-align:center; color:var(--gray);">Loading cloud data...</div>'; 
                 return; 
             }
 
@@ -390,7 +428,6 @@
             modal.style.display = 'flex';
         }
 
-        // --- HELPERS ---
         window.closeModal = () => document.getElementById('itemModal').style.display = 'none';
         
         window.handleImageUpload = (input) => {
@@ -403,27 +440,6 @@
                     window.tempImageURL = e.target.result;
                 }
                 reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        window.toggleAdminMode = () => {
-            if (!window.isAdmin) {
-                let pass = prompt("Enter Admin Password:");
-                if (pass === "INVISION2025") { // <--- CHANGE PASSWORD HERE IF NEEDED
-                    window.isAdmin = true;
-                    document.body.classList.add('admin-mode');
-                    document.getElementById('adminLock').innerText = "🔓";
-                    document.getElementById('adminLock').classList.add('unlocked');
-                    alert("Admin Mode Unlocked");
-                } else {
-                    alert("Incorrect Password");
-                }
-            } else {
-                window.isAdmin = false;
-                document.body.classList.remove('admin-mode');
-                document.getElementById('adminLock').innerText = "🔒";
-                document.getElementById('adminLock').classList.remove('unlocked');
-                alert("Admin Mode Locked");
             }
         }
 
@@ -471,7 +487,6 @@
             document.getElementById('cart-badge').style.display = count > 0 ? 'block' : 'none';
         }
 
-        // --- CHECKOUT LOGIC ---
         window.adjustQty = (id, change) => {
             if(!window.cart[id]) return;
             const item = window.appData.find(i => i.id === id);

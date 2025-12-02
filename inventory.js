@@ -1,4 +1,4 @@
-var inventory = [
+const inventory = [
   { "type": "Grip", "category": "MOV MAX", "desc": "Grip Dolly pro kit, with flight case", "sn": "DL – 20341005006", "qty": "1", "status": "OK" },
   { "type": "Grip", "category": "Pro aim", "desc": "High hat with wooden base", "sn": "N/A", "qty": "1", "status": "OK" },
   { "type": "Grip", "category": "Cartoni", "desc": "Tripod legs 10 mm bowl W/ Focus 18 head", "sn": "Legs:T628/2   Head: FG1108", "qty": "1", "status": "OK" },

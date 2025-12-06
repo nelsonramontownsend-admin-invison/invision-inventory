@@ -10,7 +10,7 @@
     
     <style>
         /* --- THEME --- */
-        :root { --primary: #64D2FF; --bg: #000000; --card: #1C1C1E; --text: #FFFFFF; --gray: #AEAEB2; --border: #2C2C2E; --input-bg: #2C2C2E; --danger: #FF453A; --success: #32D74B; --share: #0A84FF; }
+        :root { --primary: #64D2FF; --bg: #000000; --card: #1C1C1E; --text: #FFFFFF; --gray: #AEAEB2; --border: #2C2C2E; --input-bg: #2C2C2E; --danger: #FF453A; --success: #32D74B; }
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; padding-bottom: 90px; -webkit-tap-highlight-color: transparent; }
         .view { display: none; }
         .view.active { display: block; }
@@ -34,6 +34,7 @@
         .search-wrapper { position: relative; width: 100%; }
         .search-input { width: 100%; padding: 10px 35px 10px 15px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 16px; box-sizing: border-box; outline: none; }
         .search-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--gray); font-size: 16px; background: rgba(255,255,255,0.1); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; display: none; }
+        ::placeholder { color: var(--gray); }
 
         /* LIST */
         .container { max-width: 800px; margin: 0 auto; padding: 15px; }
@@ -53,6 +54,7 @@
         .admin-only { display: none !important; }
         body.admin-mode .admin-only { display: flex !important; }
         .edit-btn { padding: 10px; color: var(--gray); font-size: 18px; cursor: pointer; margin-left: auto; flex-shrink: 0; }
+        .edit-btn:hover { color: var(--primary); }
         .check-circle { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--gray); margin-right: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
         .inventory-item.selected .check-circle { background: var(--primary); border-color: var(--primary); }
         .inventory-item.selected .check-circle::after { content: '✓'; color: var(--bg); font-weight: bold; font-size: 14px; }
@@ -71,18 +73,31 @@
         .signature-box { height:100px; border:2px dashed var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--gray); font-weight:bold; background: var(--bg); }
         .remove-btn { color: var(--danger); font-size: 20px; font-weight: bold; cursor: pointer; padding: 5px 10px; margin-right: -10px; }
         
-        .action-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-        .button-row { display: flex; gap: 10px; }
-
+        .action-buttons { display: flex; gap: 10px; margin-top: 20px; overflow-x: auto; padding-bottom: 5px; }
         .form-input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 8px; margin-bottom: 5px; box-sizing: border-box; }
-        
-        .btn-primary { background: var(--primary); color: var(--bg); border: none; padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; }
-        .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; }
-        /* NEW SHARE BUTTON */
-        .btn-share { background: var(--share); color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; }
+        .btn-primary { background: var(--primary); color: var(--bg); border: none; padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 2; white-space: nowrap; }
+        .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
+        .btn-email { background: #34C759; color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
+        .btn-copy { background: #FF9F0A; color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
         .btn-new-order { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; margin-top: 10px; display: none; }
 
-        /* RECEIPT VIEW */
+        /* UI ELEMENTS */
+        .fab { position: fixed; bottom: 100px; right: 20px; width: 56px; height: 56px; background: var(--primary); border-radius: 50%; color: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 12px rgba(100, 210, 255, 0.4); cursor: pointer; z-index: 150; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--card); width: 90%; max-width: 400px; padding: 25px; border-radius: 16px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border); color: var(--text); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .form-label { display: block; font-size: 12px; font-weight: bold; color: var(--gray); margin-bottom: 5px; margin-top: 10px; }
+        .image-preview-box { width: 100%; height: 150px; background: var(--bg); border: 2px dashed var(--border); border-radius: 8px; margin-top: 5px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; cursor: pointer; }
+        .image-preview-box img { width: 100%; height: 100%; object-fit: contain; display: none; }
+        .image-preview-text { color: var(--gray); font-size: 14px; font-weight: 500; pointer-events: none; }
+
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(28, 28, 30, 0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 25px 0; z-index: 200; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--gray); font-size: 10px; font-weight: 500; cursor: pointer; width: 60px; }
+        .nav-item.active { color: var(--primary); }
+        .nav-icon { font-size: 24px; margin-bottom: 2px; }
+        .cart-count { position: absolute; top: 5px; right: 25%; background: var(--primary); color: var(--bg); font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; display: none; }
+
+        /* === RECEIPT PREVIEW === */
         #view-receipt { background: #555; min-height: 100vh; padding: 20px; display: none; }
         #view-receipt.active { display: block; }
         .paper-sheet { background: white; color: black; max-width: 700px; margin: 0 auto; padding: 40px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -98,25 +113,11 @@
         .legal-text { margin-top: 40px; font-size: 10px; color: #555; text-align: center; }
         .receipt-actions { max-width: 700px; margin: 20px auto; display: flex; gap: 10px; }
 
-        /* MODALS & NAV */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .modal-content { background: var(--card); width: 90%; max-width: 400px; padding: 25px; border-radius: 16px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border); color: var(--text); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
-        .form-label { display: block; font-size: 12px; font-weight: bold; color: var(--gray); margin-bottom: 5px; margin-top: 10px; }
-        .image-preview-box { width: 100%; height: 150px; background: var(--bg); border: 2px dashed var(--border); border-radius: 8px; margin-top: 5px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; cursor: pointer; }
-        .image-preview-box img { width: 100%; height: 100%; object-fit: contain; display: none; }
-        .image-preview-text { color: var(--gray); font-size: 14px; font-weight: 500; pointer-events: none; }
-        .fab { position: fixed; bottom: 100px; right: 20px; width: 56px; height: 56px; background: var(--primary); border-radius: 50%; color: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 12px rgba(100, 210, 255, 0.4); cursor: pointer; z-index: 150; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(28, 28, 30, 0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 25px 0; z-index: 200; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--gray); font-size: 10px; font-weight: 500; cursor: pointer; width: 60px; }
-        .nav-item.active { color: var(--primary); }
-        .nav-icon { font-size: 24px; margin-bottom: 2px; }
-        .cart-count { position: absolute; top: 5px; right: 25%; background: var(--primary); color: var(--bg); font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; display: none; }
-
-        /* === PRINT STYLES === */
         @media print {
+            body { background-color: white !important; color: black !important; padding: 0; margin: 0; }
+            body > *:not(#view-receipt) { display: none !important; }
+            #view-receipt { display: block !important; background: white; padding: 0; position: absolute; top: 0; left: 0; width: 100%; }
             .receipt-actions, .app-header, .bottom-nav { display: none !important; }
-            #view-receipt { background: white; padding: 0; position: absolute; top: 0; left: 0; width: 100%; }
             .paper-sheet { box-shadow: none; padding: 0; width: 100%; max-width: 100%; border-radius: 0; }
         }
     </style>
@@ -165,10 +166,8 @@
             
             <div class="signature-box">Sign Here</div>
             <div class="action-buttons">
-                <div class="button-row">
-                    <button class="btn-secondary" onclick="generateReceiptPreview()">📄 View Receipt</button>
-                    <button class="btn-share" onclick="shareManifest()">📤 Share WhatsApp</button>
-                </div>
+                <button class="btn-secondary" onclick="generateReceiptPreview()">📄 Generate Receipt</button>
+                <button class="btn-email" onclick="sendEmail()">✉️ Email</button>
                 <button id="checkoutBtn" class="btn-primary" onclick="handleCheckout()">Done (Mark Rented)</button>
             </div>
             <button id="newOrderBtn" class="btn-new-order" onclick="startNewOrder()">Start New Rental ↻</button>
@@ -177,8 +176,8 @@
 
     <div id="view-receipt" class="view">
         <div class="receipt-actions">
-            <button class="btn-secondary" onclick="closeReceiptPreview()">← Back</button>
-            <button class="btn-primary" onclick="window.print()">🖨 Print / Save PDF</button>
+            <button class="btn-secondary" onclick="closeReceiptPreview()">← Edit</button>
+            <button class="btn-primary" onclick="window.print()">🖨 Print / Share PDF</button>
         </div>
         <div class="paper-sheet">
             <div class="print-header">
@@ -250,7 +249,16 @@
         const auth = getAuth(app);
 
         window.appData = []; window.cart = {}; window.currentTypeFilter = 'ALL'; window.editingId = null; window.tempImageURL = ""; window.isAdmin = false; window.isCheckoutComplete = false;
-        
+
+        // --- AUTO-SAVE CART LOGIC ---
+        function saveCartLocally() {
+            localStorage.setItem('invision_cart', JSON.stringify(window.cart));
+        }
+        function loadCartLocally() {
+            const saved = localStorage.getItem('invision_cart');
+            if(saved) { window.cart = JSON.parse(saved); updateCartBadge(); }
+        }
+
         onAuthStateChanged(auth, (user) => {
             const btn = document.getElementById('authBtn');
             if (user) { window.isAdmin = true; document.body.classList.add('admin-mode'); btn.innerText = "Log Out"; btn.classList.add('logged-in'); btn.onclick = handleLogout; } 
@@ -267,7 +275,15 @@
         window.handleLogout = async () => { if(confirm("Log out now?")) await signOut(auth); }
 
         const q = query(collection(db, "gear"), orderBy("category"));
-        onSnapshot(q, (snapshot) => { window.appData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderList(); });
+        onSnapshot(q, (snapshot) => { 
+            window.appData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
+            renderList();
+            // Refresh manifest if open
+            if(document.getElementById('view-checkout').classList.contains('active')) renderManifest();
+        });
+
+        // Load cart on startup
+        loadCartLocally();
 
         window.saveItem = async function() {
             if(!window.isAdmin) return;
@@ -291,45 +307,25 @@
             const batch = writeBatch(db);
             cartIds.forEach(id => { batch.update(doc(db, "gear", id), { status: "OUT" }); });
             
-            try { await batch.commit(); alert("Success! Items marked OUT."); 
-            window.isCheckoutComplete = true; document.getElementById('checkoutBtn').style.display = 'none'; document.getElementById('newOrderBtn').style.display = 'block'; }
+            try { 
+                await batch.commit(); 
+                alert("Success! Items marked OUT.\n\nClick 'Generate Receipt' to print/email."); 
+                window.isCheckoutComplete = true; 
+                document.getElementById('checkoutBtn').style.display = 'none'; 
+                document.getElementById('newOrderBtn').style.display = 'block'; 
+            }
             catch(e) { alert("Error: " + e.message); }
         }
         
         window.startNewOrder = () => {
             if(!confirm("Clear receipt and start new order?")) return;
-            window.cart = {}; updateCartBadge(); renderManifest();
+            window.cart = {}; saveCartLocally(); updateCartBadge(); renderManifest();
             document.getElementById('clientName').value = ""; document.getElementById('clientEmail').value = ""; document.getElementById('returnDate').value = "";
             window.isCheckoutComplete = false; document.getElementById('checkoutBtn').style.display = 'block'; document.getElementById('newOrderBtn').style.display = 'none';
             document.querySelector('.nav-item').click();
         }
 
-        // --- NEW NATIVE SHARE ---
-        window.shareManifest = () => {
-            const client = document.getElementById('clientName').value || "Client";
-            const date = document.getElementById('returnDate').value || "TBD";
-            let text = `RENTAL MANIFEST\nClient: ${client}\nReturn: ${date}\n\n`;
-            const cartIds = Object.keys(window.cart);
-            if(cartIds.length === 0) { alert("Cart is empty"); return; }
-            cartIds.forEach(id => {
-                const item = window.appData.find(i => i.id === id);
-                const data = window.cart[id];
-                text += `[x${data.qty}] ${item.category} ${item.desc} (${item.sn})\n`;
-                if(data.notes) text += `   Note: ${data.notes}\n`;
-            });
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: `Rental - ${client}`,
-                    text: text,
-                }).catch(console.error);
-            } else {
-                // Fallback for desktops that don't support share
-                navigator.clipboard.writeText(text).then(() => alert("Receipt copied to clipboard!"));
-            }
-        }
-
-        // --- RECEIPT PREVIEW LOGIC ---
+        // --- RECEIPT PREVIEW ---
         window.generateReceiptPreview = function() {
             const client = document.getElementById('clientName').value || "Client";
             const date = document.getElementById('returnDate').value || "TBD";
@@ -392,7 +388,7 @@
         }
         window.closeModal = () => document.getElementById('itemModal').style.display = 'none';
         window.handleImageUpload = (input) => { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = (e) => { document.getElementById('imagePreview').src = e.target.result; document.getElementById('imagePreview').style.display = 'block'; document.getElementById('previewText').style.display = 'none'; window.tempImageURL = e.target.result; }; reader.readAsDataURL(input.files[0]); } };
-        window.toggleSelection = (id) => { if (window.cart.hasOwnProperty(id)) { delete window.cart[id]; } else { window.cart[id] = { qty: 1, notes: "" }; } renderList(); updateCartBadge(); };
+        window.toggleSelection = (id) => { if (window.cart.hasOwnProperty(id)) { delete window.cart[id]; } else { window.cart[id] = { qty: 1, notes: "" }; } saveCartLocally(); renderList(); updateCartBadge(); };
         window.filterType = (type, btn) => { window.currentTypeFilter = type; document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderList(); };
         window.handleSearch = () => { const val = document.getElementById('searchBox').value; document.getElementById('clearBtn').style.display = val.length > 0 ? 'flex' : 'none'; renderList(); };
         window.clearSearch = () => { document.getElementById('searchBox').value = ''; handleSearch(); };
@@ -405,9 +401,9 @@
             if(viewId === 'view-checkout') renderManifest(); 
         };
         window.updateCartBadge = () => { const count = Object.keys(window.cart).length; document.getElementById('cart-badge').innerText = count; document.getElementById('cart-badge').style.display = count > 0 ? 'block' : 'none'; };
-        window.adjustQty = (id, change) => { if(!window.cart[id]) return; const item = window.appData.find(i => i.id === id); const maxQty = parseInt(item.qty); let newQty = window.cart[id].qty + change; if (newQty < 1) newQty = 1; if (newQty > maxQty) newQty = maxQty; window.cart[id].qty = newQty; renderManifest(); };
-        window.removeFromCart = (id) => { delete window.cart[id]; updateCartBadge(); renderManifest(); renderList(); };
-        window.updateCartItem = (id, field, value) => { if (window.cart[id]) window.cart[id][field] = value; };
+        window.adjustQty = (id, change) => { if(!window.cart[id]) return; const item = window.appData.find(i => i.id === id); const maxQty = parseInt(item.qty); let newQty = window.cart[id].qty + change; if (newQty < 1) newQty = 1; if (newQty > maxQty) newQty = maxQty; window.cart[id].qty = newQty; saveCartLocally(); renderManifest(); };
+        window.removeFromCart = (id) => { delete window.cart[id]; saveCartLocally(); updateCartBadge(); renderManifest(); renderList(); };
+        window.updateCartItem = (id, field, value) => { if (window.cart[id]) window.cart[id][field] = value; saveCartLocally(); };
         
         window.renderManifest = () => {
             const container = document.getElementById('selected-items-container');
@@ -422,6 +418,27 @@
                 row.innerHTML = `<div class="manifest-top"><div><div style="font-size:11px; font-weight:700; color:var(--primary);">${item.category}</div><div style="font-weight:600; color:var(--text);">${item.desc}</div></div><div class="remove-btn" onclick="removeFromCart('${item.id}')">✕</div></div><div class="manifest-controls"><div class="stepper"><button class="stepper-btn" onclick="adjustQty('${item.id}', -1)">-</button><div class="stepper-val">${cartData.qty}</div><button class="stepper-btn" onclick="adjustQty('${item.id}', 1)">+</button></div><input type="text" class="condition-input" value="${cartData.notes}" placeholder="Condition / Notes" oninput="updateCartItem('${item.id}', 'notes', this.value)"></div>`;
                 container.appendChild(row);
             });
+        }
+
+        window.sendEmail = () => {
+            const clientName = document.getElementById('clientName').value || "Client";
+            const clientEmail = document.getElementById('clientEmail').value;
+            const returnDate = document.getElementById('returnDate').value || "TBD";
+            const myEmail = "nelson.ramon.townsend@gmail.com"; 
+            const bossEmail = "nelson.townsend@live.com";
+            let body = `RENTAL MANIFEST\nClient: ${clientName}\nReturn: ${returnDate}\n----------------\n\n`;
+            const cartIds = Object.keys(window.cart);
+            if(cartIds.length === 0) { alert("Cart is empty!"); return; }
+            cartIds.forEach(id => {
+                const item = window.appData.find(i => i.id === id);
+                const data = window.cart[id];
+                body += `[x${data.qty}] ${item.category} ${item.desc}\n`;
+                if(data.notes) body += `Note: ${data.notes}\n`;
+            });
+            body += `\n----------------\nSigned by: ${clientName}`;
+            const subject = encodeURIComponent(`Gear Rental - ${clientName}`);
+            const bodyEnc = encodeURIComponent(body);
+            window.location.href = `mailto:${clientEmail}?bcc=${myEmail},${bossEmail}&subject=${subject}&body=${bodyEnc}`;
         }
     </script>
 </body>

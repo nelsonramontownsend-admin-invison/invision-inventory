@@ -10,8 +10,10 @@
     
     <style>
         /* --- THEME --- */
-        :root { --primary: #64D2FF; --bg: #000000; --card: #1C1C1E; --text: #FFFFFF; --gray: #AEAEB2; --border: #2C2C2E; --input-bg: #2C2C2E; --danger: #FF453A; --success: #32D74B; }
+        :root { --primary: #64D2FF; --bg: #000000; --card: #1C1C1E; --text: #FFFFFF; --gray: #AEAEB2; --border: #2C2C2E; --input-bg: #2C2C2E; --danger: #FF453A; --success: #32D74B; --share: #0A84FF; }
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; padding-bottom: 90px; -webkit-tap-highlight-color: transparent; }
+        
+        /* VIEWS */
         .view { display: none; }
         .view.active { display: block; }
 
@@ -26,17 +28,15 @@
         .auth-btn { font-size: 14px; font-weight: 600; cursor: pointer; padding: 8px 16px; color: var(--primary); border: 1px solid var(--primary); border-radius: 20px; background: rgba(100, 210, 255, 0.1); transition: all 0.2s; }
         .auth-btn.logged-in { border-color: var(--danger); color: var(--danger); background: rgba(255, 69, 58, 0.1); }
 
-        /* SCROLLABLE TABS */
+        /* CONTROLS */
         #top-controls { display: block; overflow: hidden; transition: max-height 0.3s ease; }
-        .tab-scroller { overflow-x: auto; white-space: nowrap; padding-bottom: 5px; margin-bottom: 10px; -webkit-overflow-scrolling: touch; }
-        .segment-control { display: inline-flex; background: var(--input-bg); border-radius: 9px; padding: 2px; }
-        .segment-btn { border: none; background: none; padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--gray); border-radius: 7px; cursor: pointer; }
+        .segment-control { display: flex; background: var(--input-bg); border-radius: 9px; padding: 2px; margin-bottom: 10px; }
+        .segment-btn { flex: 1; border: none; background: none; padding: 6px; font-size: 13px; font-weight: 600; color: var(--gray); border-radius: 7px; cursor: pointer; }
         .segment-btn.active { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-        
-        /* SEARCH */
         .search-wrapper { position: relative; width: 100%; }
         .search-input { width: 100%; padding: 10px 35px 10px 15px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 16px; box-sizing: border-box; outline: none; }
         .search-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--gray); font-size: 16px; background: rgba(255,255,255,0.1); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; display: none; }
+        ::placeholder { color: var(--gray); }
 
         /* LIST */
         .container { max-width: 800px; margin: 0 auto; padding: 15px; }
@@ -79,7 +79,23 @@
         .btn-primary { background: var(--primary); color: var(--bg); border: none; padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 2; white-space: nowrap; }
         .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
         .btn-email { background: #34C759; color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
+        .btn-share { background: var(--share); color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
         .btn-new-order { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; margin-top: 10px; display: none; }
+
+        /* === VIEW 3: RECEIPT PREVIEW (White Paper) === */
+        #view-receipt { background: #333; min-height: 100vh; padding: 20px; }
+        .paper-sheet { background: white; color: black; max-width: 700px; margin: 0 auto; padding: 40px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid black; padding-bottom: 20px; margin-bottom: 20px; }
+        .print-logo { height: 50px; }
+        .print-title { font-size: 24px; font-weight: bold; text-transform: uppercase; }
+        .print-meta { margin-bottom: 20px; line-height: 1.6; font-size: 14px; }
+        .print-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 30px; }
+        .print-table th { text-align: left; border-bottom: 1px solid black; padding: 8px; font-weight: bold; text-transform: uppercase; }
+        .print-table td { border-bottom: 1px solid #ccc; padding: 8px; }
+        .print-footer { margin-top: 60px; display: flex; justify-content: space-between; }
+        .sig-line { width: 40%; border-top: 1px solid black; padding-top: 10px; font-size: 12px; text-align: center; }
+        .legal-text { margin-top: 40px; font-size: 10px; color: #555; text-align: center; }
+        .receipt-actions { max-width: 700px; margin: 0 auto 20px auto; display: flex; gap: 10px; }
 
         /* MODALS & NAV */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
@@ -96,28 +112,15 @@
         .nav-icon { font-size: 24px; margin-bottom: 2px; }
         .cart-count { position: absolute; top: 5px; right: 25%; background: var(--primary); color: var(--bg); font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; display: none; }
 
-        /* === RECEIPT PREVIEW === */
-        #view-receipt { background: #555; min-height: 100vh; padding: 20px; display: none; }
-        #view-receipt.active { display: block; }
-        .paper-sheet { background: white; color: black; max-width: 700px; margin: 0 auto; padding: 40px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid black; padding-bottom: 20px; margin-bottom: 20px; }
-        .print-logo { height: 50px; }
-        .print-title { font-size: 24px; font-weight: bold; text-transform: uppercase; }
-        .print-meta { margin-bottom: 20px; line-height: 1.6; font-size: 14px; }
-        .print-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 30px; }
-        .print-table th { text-align: left; border-bottom: 1px solid black; padding: 8px; font-weight: bold; text-transform: uppercase; }
-        .print-table td { border-bottom: 1px solid #ccc; padding: 8px; }
-        .print-footer { margin-top: 60px; display: flex; justify-content: space-between; }
-        .sig-line { width: 40%; border-top: 1px solid black; padding-top: 10px; font-size: 12px; text-align: center; }
-        .legal-text { margin-top: 40px; font-size: 10px; color: #555; text-align: center; }
-        .receipt-actions { max-width: 700px; margin: 20px auto; display: flex; gap: 10px; }
-
+        /* === PRINT OVERRIDES === */
         @media print {
             body { background-color: white !important; color: black !important; padding: 0; margin: 0; }
             body > *:not(#view-receipt) { display: none !important; }
-            #view-receipt { display: block !important; background: white; padding: 0; position: absolute; top: 0; left: 0; width: 100%; }
-            .receipt-actions, .app-header, .bottom-nav { display: none !important; }
-            .paper-sheet { box-shadow: none; padding: 0; width: 100%; max-width: 100%; border-radius: 0; }
+            #view-receipt { display: block !important; background: white !important; padding: 0; position: absolute; top: 0; left: 0; width: 100%; min-height: auto; }
+            .receipt-actions { display: none !important; }
+            .paper-sheet { box-shadow: none !important; padding: 0 !important; width: 100%; max-width: 100%; margin: 0; }
+            .print-table th { border-bottom: 1px solid black !important; }
+            .print-table td { border-bottom: 1px solid #ddd !important; }
         }
     </style>
 </head>
@@ -133,19 +136,11 @@
         </div>
         
         <div id="top-controls">
-            <div class="tab-scroller">
-                <div class="segment-control">
-                    <button class="segment-btn active" onclick="filterType('ALL', this)">All</button>
-                    <button class="segment-btn" onclick="filterType('CAMERAS', this)">Cameras</button>
-                    <button class="segment-btn" onclick="filterType('MONITORS', this)">Monitors</button>
-                    <button class="segment-btn" onclick="filterType('BATTERIES', this)">Batteries</button>
-                    <button class="segment-btn" onclick="filterType('LENSES', this)">Lenses</button>
-                    <button class="segment-btn" onclick="filterType('FILTERS', this)">Filters</button>
-                    <button class="segment-btn" onclick="filterType('TRIPODS', this)">Tripods</button>
-                    <button class="segment-btn" onclick="filterType('GRIP', this)">Grip</button>
-                </div>
+            <div class="segment-control">
+                <button class="segment-btn active" onclick="filterType('ALL', this)">All</button>
+                <button class="segment-btn" onclick="filterType('CAMERA', this)">Camera</button>
+                <button class="segment-btn" onclick="filterType('GRIP', this)">Grip</button>
             </div>
-            
             <div class="search-wrapper">
                 <input type="text" class="search-input" id="searchBox" placeholder="Search..." onkeyup="handleSearch()">
                 <div id="clearBtn" class="search-clear" onclick="clearSearch()">✕</div>
@@ -174,6 +169,7 @@
             <div class="signature-box">Sign Here</div>
             <div class="action-buttons">
                 <button class="btn-secondary" onclick="generateReceiptPreview()">📄 Generate Receipt</button>
+                
                 <button class="btn-email" onclick="sendEmail()">✉️ Email</button>
                 <button id="checkoutBtn" class="btn-primary" onclick="handleCheckout()">Done (Mark Rented)</button>
             </div>
@@ -208,33 +204,14 @@
         <div class="modal-content">
             <h2 id="modalTitle" style="margin-top:0;">Add New Item</h2>
             <label class="form-label">Item Photo</label>
-            <div class="image-preview-box" onclick="document.getElementById('fileInput').click()">
-                <span id="previewText" class="image-preview-text">Tap to Upload Photo</span>
-                <img id="imagePreview" src="">
-            </div>
+            <div class="image-preview-box" onclick="document.getElementById('fileInput').click()"><span id="previewText" class="image-preview-text">Tap to Upload Photo</span><img id="imagePreview" src=""></div>
             <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleImageUpload(this)">
-            <label class="form-label">Placement</label>
-            <select id="itemType" class="form-input">
-                <option value="CAMERAS">Cameras</option>
-                <option value="MONITORS">Monitors</option>
-                <option value="BATTERIES">Batteries</option>
-                <option value="LENSES">Lenses</option>
-                <option value="FILTERS">Filters</option>
-                <option value="TRIPODS">Tripods</option>
-                <option value="GRIP">Grip</option>
-            </select>
-            <label class="form-label">Brand</label>
-            <input type="text" id="itemCategory" class="form-input" placeholder="e.g. Sony">
-            <label class="form-label">Item Name</label>
-            <input type="text" id="itemDesc" class="form-input" placeholder="Description">
-            <label class="form-label">Serial Number</label>
-            <input type="text" id="itemSerial" class="form-input" placeholder="Serial #">
-            <label class="form-label">Quantity</label>
-            <input type="number" id="itemQty" class="form-input" placeholder="Qty" value="1">
-            <div class="modal-buttons">
-                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
-                <button class="btn-primary" onclick="saveItem()">Save</button>
-            </div>
+            <label class="form-label">Placement</label><select id="itemType" class="form-input"><option value="Camera">Camera Dept</option><option value="Grip">Grip Dept</option></select>
+            <label class="form-label">Brand</label><input type="text" id="itemCategory" class="form-input" placeholder="e.g. Sony">
+            <label class="form-label">Item Name</label><input type="text" id="itemDesc" class="form-input" placeholder="Description">
+            <label class="form-label">Serial Number</label><input type="text" id="itemSerial" class="form-input" placeholder="Serial #">
+            <label class="form-label">Quantity</label><input type="number" id="itemQty" class="form-input" placeholder="Qty" value="1">
+            <div class="modal-buttons"><button class="btn-secondary" onclick="closeModal()">Cancel</button><button class="btn-primary" onclick="saveItem()">Save</button></div>
         </div>
     </div>
 
@@ -244,25 +221,17 @@
             <input type="email" id="loginEmail" class="form-input" placeholder="Email Address">
             <input type="password" id="loginPassword" class="form-input" placeholder="Password">
             <div id="loginError" style="color:var(--danger); font-size:13px; margin-top:10px; display:none;"></div>
-            <div class="modal-buttons" style="flex-direction: column;">
-                <button class="btn-primary" onclick="handleLogin()">Log In</button>
-                <button class="btn-secondary" onclick="closeLoginModal()">Cancel</button>
-            </div>
+            <div class="modal-buttons" style="flex-direction: column;"><button class="btn-primary" onclick="handleLogin()">Log In</button><button class="btn-secondary" onclick="closeLoginModal()">Cancel</button></div>
         </div>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('view-inventory', this)">
-            <span class="nav-icon">📦</span><span>Inventory</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('view-checkout', this)">
-            <span class="nav-icon">📝</span><span>Check Out</span>
-            <span id="cart-badge" class="cart-count">0</span>
-        </div>
+        <div class="nav-item active" onclick="switchTab('view-inventory', this)"><span class="nav-icon">📦</span><span>Inventory</span></div>
+        <div class="nav-item" onclick="switchTab('view-checkout', this)"><span class="nav-icon">📝</span><span>Check Out</span><span id="cart-badge" class="cart-count">0</span></div>
     </div>
 
     <script src="inventory.js?v=2"></script>
-    
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
         import { getFirestore, collection, onSnapshot, addDoc, updateDoc, doc, query, orderBy, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
@@ -284,9 +253,16 @@
 
         window.appData = []; window.cart = {}; window.currentTypeFilter = 'ALL'; window.editingId = null; window.tempImageURL = ""; window.isAdmin = false; window.isCheckoutComplete = false;
 
-        // --- AUTO-SAVE ---
-        function saveCartLocally() { try { localStorage.setItem('invision_cart', JSON.stringify(window.cart)); } catch(e) {} }
-        function loadCartLocally() { try { const saved = localStorage.getItem('invision_cart'); if(saved) { window.cart = JSON.parse(saved); updateCartBadge(); } } catch(e) { window.cart = {}; } }
+        // --- AUTO-SAVE CART LOGIC ---
+        function saveCartLocally() {
+            try { localStorage.setItem('invision_cart', JSON.stringify(window.cart)); } catch(e) {}
+        }
+        function loadCartLocally() {
+            try {
+                const saved = localStorage.getItem('invision_cart');
+                if(saved) { window.cart = JSON.parse(saved); updateCartBadge(); }
+            } catch(e) { window.cart = {}; }
+        }
 
         onAuthStateChanged(auth, (user) => {
             const btn = document.getElementById('authBtn');
@@ -336,7 +312,7 @@
             
             try { 
                 await batch.commit(); 
-                alert("Success! Items marked OUT.\n\nClick 'Generate Receipt' to print/email."); 
+                alert("Success! Items marked OUT."); 
                 window.isCheckoutComplete = true; 
                 document.getElementById('checkoutBtn').style.display = 'none'; 
                 document.getElementById('newOrderBtn').style.display = 'block'; 
@@ -352,21 +328,27 @@
             document.querySelector('.nav-item').click();
         }
 
+        // --- NEW RECEIPT PREVIEW LOGIC ---
         window.generateReceiptPreview = function() {
             const client = document.getElementById('clientName').value || "Client";
             const date = document.getElementById('returnDate').value || "TBD";
             const tbody = document.getElementById('print-tbody');
             const meta = document.getElementById('print-meta');
+            
             const cartIds = Object.keys(window.cart);
             if(cartIds.length === 0) { alert("Cart is empty"); return; }
+            
             meta.innerHTML = `Client: <b>${client}</b><br>Return Date: <b>${date}</b><br>Date Issued: ${new Date().toLocaleDateString()}`;
             tbody.innerHTML = '';
+            
             cartIds.forEach(id => {
                 const item = window.appData.find(i => i.id === id);
                 const data = window.cart[id];
                 tbody.innerHTML += `<tr><td style="text-align:center;">${data.qty}</td><td><b>${item.category}</b> ${item.desc}</td><td>${item.sn}</td><td>${data.notes || '-'}</td></tr>`;
             });
+            
             switchTab('view-receipt', document.querySelector('.nav-item')); 
+            // Hide navbar for preview
             document.querySelector('.bottom-nav').style.display = 'none';
         }
 
@@ -381,44 +363,10 @@
             const query = document.getElementById('searchBox').value.toLowerCase();
             const filteredItems = window.appData.filter(item => {
                 const matchesSearch = (item.desc || "").toLowerCase().includes(query) || (item.category || "").toLowerCase().includes(query);
-                
-                // FILTER LOGIC
-                let matchesType = false;
-                if(window.currentTypeFilter === 'ALL') matchesType = true;
-                else {
-                    // Normalize the item type from Cloud
-                    let itemType = (item.type || "").toUpperCase(); 
-                    // Map "Camera" -> Matches CAMERAS, LENSES, FILTERS, MONITORS, BATTERIES
-                    if(window.currentTypeFilter === 'CAMERAS' && itemType === 'CAMERA') matchesType = true;
-                    else if(window.currentTypeFilter === 'GRIP' && itemType === 'GRIP') matchesType = true;
-                    // For now, if we don't have detailed tags in DB, fallback:
-                    else if(window.currentTypeFilter === itemType) matchesType = true;
-                }
-                // To support new tabs (LENSES, FILTERS etc), we need to update the data in Firebase
-                // For now, "ALL" works. 
-                
-                return matchesSearch; // Simplified for now to ensure list shows
+                const matchesType = window.currentTypeFilter === 'ALL' || (item.type || "").toUpperCase() === window.currentTypeFilter;
+                return matchesSearch && matchesType;
             });
-
-            // Since we need to support the new tabs but the DB only has "Camera" and "Grip" tags:
-            // We do a "Smart Filter" based on keywords in the description
-            const finalFiltered = filteredItems.filter(item => {
-                if (window.currentTypeFilter === 'ALL') return true;
-                
-                const txt = (item.category + " " + item.desc).toUpperCase();
-                
-                if (window.currentTypeFilter === 'CAMERAS') return (item.type === 'Camera' && !txt.includes('LENS') && !txt.includes('FILTER') && !txt.includes('MONITOR') && !txt.includes('BATTERY'));
-                if (window.currentTypeFilter === 'LENSES') return txt.includes('LENS');
-                if (window.currentTypeFilter === 'MONITORS') return txt.includes('MONITOR');
-                if (window.currentTypeFilter === 'BATTERIES') return txt.includes('BATTERY') || txt.includes('CHARGER');
-                if (window.currentTypeFilter === 'FILTERS') return txt.includes('FILTER') || txt.includes('ND') || txt.includes('POLA');
-                if (window.currentTypeFilter === 'TRIPODS') return txt.includes('TRIPOD') || txt.includes('HEAD');
-                if (window.currentTypeFilter === 'GRIP') return item.type === 'Grip';
-                
-                return false;
-            });
-
-            finalFiltered.forEach(item => {
+            filteredItems.forEach(item => {
                 const id = item.id; const isSelected = window.cart.hasOwnProperty(id); const isRented = item.status === "OUT";
                 const el = document.createElement('div'); el.className = `inventory-item ${isSelected ? 'selected' : ''} ${isRented ? 'rented' : ''}`;
                 let imageHTML = `<div class="item-thumb">📷</div>`; if(item.image) { imageHTML = `<div class="item-thumb"><img src="${item.image}"></div>`; }
@@ -434,11 +382,10 @@
             document.getElementById('fileInput').value = ""; imgPrev.src = ""; imgPrev.style.display = "none"; document.getElementById('previewText').style.display = "block"; window.tempImageURL = "";
             if (id === null) {
                 window.editingId = null; title.innerText = "Add New Item";
-                document.getElementById('itemType').value = "CAMERAS"; 
+                document.getElementById('itemType').value = "Camera"; document.getElementById('itemCategory').value = ""; document.getElementById('itemDesc').value = ""; document.getElementById('itemSerial').value = ""; document.getElementById('itemQty').value = "1";
             } else {
                 window.editingId = id; const item = window.appData.find(i => i.id === id); title.innerText = "Edit Item";
-                document.getElementById('itemType').value = "CAMERAS"; // Default, user can change
-                document.getElementById('itemCategory').value = item.category; document.getElementById('itemDesc').value = item.desc; document.getElementById('itemSerial').value = item.sn; document.getElementById('itemQty').value = item.qty;
+                document.getElementById('itemType').value = item.type; document.getElementById('itemCategory').value = item.category; document.getElementById('itemDesc').value = item.desc; document.getElementById('itemSerial').value = item.sn; document.getElementById('itemQty').value = item.qty;
                 if(item.image) { imgPrev.src = item.image; imgPrev.style.display = "block"; document.getElementById('previewText').style.display = "none"; window.tempImageURL = item.image; }
             }
             modal.style.display = 'flex';

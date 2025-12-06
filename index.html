@@ -10,7 +10,7 @@
     
     <style>
         /* --- THEME --- */
-        :root { --primary: #64D2FF; --bg: #000000; --card: #1C1C1E; --text: #FFFFFF; --gray: #AEAEB2; --border: #2C2C2E; --input-bg: #2C2C2E; --danger: #FF453A; --success: #32D74B; }
+        :root { --primary: #64D2FF; --bg: #000000; --card: #1C1C1E; --text: #FFFFFF; --gray: #AEAEB2; --border: #2C2C2E; --input-bg: #2C2C2E; --danger: #FF453A; --success: #32D74B; --share: #0A84FF; }
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; padding-bottom: 90px; -webkit-tap-highlight-color: transparent; }
         .view { display: none; }
         .view.active { display: block; }
@@ -21,7 +21,6 @@
         .logo-container { flex: 1; display: flex; align-items: center; justify-content: flex-start; overflow: hidden; } 
         .company-logo { max-height: 40px; max-width: 60px; object-fit: contain; margin-right: 10px; }
         .brand-name { font-family: 'Arial Black', sans-serif; font-size: 20px; font-weight: 900; color: black; -webkit-text-stroke: 1px var(--primary); text-transform: uppercase; letter-spacing: -0.5px; white-space: nowrap; }
-        
         .admin-lock { font-size: 24px; cursor: pointer; padding: 10px; color: var(--gray); flex-shrink: 0; margin-left: 15px; background: rgba(255,255,255,0.05); border-radius: 50%; } 
         .admin-lock.unlocked { color: var(--primary); }
         .auth-btn { font-size: 14px; font-weight: 600; cursor: pointer; padding: 8px 16px; color: var(--primary); border: 1px solid var(--primary); border-radius: 20px; background: rgba(100, 210, 255, 0.1); transition: all 0.2s; }
@@ -35,6 +34,7 @@
         .search-wrapper { position: relative; width: 100%; }
         .search-input { width: 100%; padding: 10px 35px 10px 15px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 16px; box-sizing: border-box; outline: none; }
         .search-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--gray); font-size: 16px; background: rgba(255,255,255,0.1); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; display: none; }
+        ::placeholder { color: var(--gray); }
 
         /* LIST */
         .container { max-width: 800px; margin: 0 auto; padding: 15px; }
@@ -49,7 +49,6 @@
         .item-name { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.25; }
         .item-meta { font-size: 12px; color: var(--gray); font-family: monospace; display: flex; gap: 8px; align-items: center; margin-top: 2px; }
         .qty-badge { background: var(--input-bg); color: var(--text); padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 10px; border: 1px solid var(--border); }
-        
         .checkin-btn { background: var(--input-bg); color: #32D74B; font-weight: bold; font-size: 10px; padding: 6px 10px; border-radius: 6px; border: 1px solid #32D74B; cursor: pointer; margin-left: auto; }
         
         .admin-only { display: none !important; }
@@ -78,35 +77,9 @@
         
         /* BUTTONS */
         .btn-primary { background: var(--primary); color: var(--bg); border: none; padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 2; white-space: nowrap; }
-        .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
-        .btn-email { background: #34C759; color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
+        .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; font-size: 14px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
+        .btn-share { background: var(--share); color: white; border: none; padding: 16px; font-size: 14px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
         .btn-new-order { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; margin-top: 10px; display: none; }
-
-        /* MODALS & NAV */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .modal-content { background: var(--card); width: 90%; max-width: 400px; padding: 25px; border-radius: 16px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border); color: var(--text); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
-        .form-label { display: block; font-size: 12px; font-weight: bold; color: var(--gray); margin-bottom: 5px; margin-top: 10px; }
-        .image-preview-box { width: 100%; height: 150px; background: var(--bg); border: 2px dashed var(--border); border-radius: 8px; margin-top: 5px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; cursor: pointer; }
-        .image-preview-box img { width: 100%; height: 100%; object-fit: contain; display: none; }
-        .image-preview-text { color: var(--gray); font-size: 14px; font-weight: 500; pointer-events: none; }
-
-        .fab { position: fixed; bottom: 100px; right: 20px; width: 56px; height: 56px; background: var(--primary); border-radius: 50%; color: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 12px rgba(100, 210, 255, 0.4); cursor: pointer; z-index: 150; }
-
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(28, 28, 30, 0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 25px 0; z-index: 200; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--gray); font-size: 10px; font-weight: 500; cursor: pointer; width: 60px; }
-        .nav-item.active { color: var(--primary); }
-        .nav-icon { font-size: 24px; margin-bottom: 2px; }
-        .cart-count { position: absolute; top: 5px; right: 25%; background: var(--primary); color: var(--bg); font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; display: none; }
-
-        /* === PRINT STYLES === */
-        @media print {
-            body { background-color: white !important; color: black !important; padding: 0; margin: 0; }
-            body > *:not(#view-receipt) { display: none !important; }
-            #view-receipt { display: block !important; background: white; padding: 0; position: absolute; top: 0; left: 0; width: 100%; }
-            .receipt-actions, .app-header, .bottom-nav { display: none !important; }
-            .paper-sheet { box-shadow: none; padding: 0; width: 100%; max-width: 100%; border-radius: 0; }
-        }
 
         /* RECEIPT VIEW */
         #view-receipt { background: #555; min-height: 100vh; padding: 20px; display: none; }
@@ -124,8 +97,29 @@
         .legal-text { margin-top: 40px; font-size: 10px; color: #555; text-align: center; }
         .receipt-actions { max-width: 700px; margin: 20px auto; display: flex; gap: 10px; }
 
-        /* FOOTER LINK */
-        .reset-link { text-align: center; color: #333; font-size: 10px; padding: 20px; cursor: pointer; opacity: 0.5; }
+        /* MODALS & NAV */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--card); width: 90%; max-width: 400px; padding: 25px; border-radius: 16px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border); color: var(--text); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .form-label { display: block; font-size: 12px; font-weight: bold; color: var(--gray); margin-bottom: 5px; margin-top: 10px; }
+        .image-preview-box { width: 100%; height: 150px; background: var(--bg); border: 2px dashed var(--border); border-radius: 8px; margin-top: 5px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; cursor: pointer; }
+        .image-preview-box img { width: 100%; height: 100%; object-fit: contain; display: none; }
+        .image-preview-text { color: var(--gray); font-size: 14px; font-weight: 500; pointer-events: none; }
+        .fab { position: fixed; bottom: 100px; right: 20px; width: 56px; height: 56px; background: var(--primary); border-radius: 50%; color: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 12px rgba(100, 210, 255, 0.4); cursor: pointer; z-index: 150; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(28, 28, 30, 0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 25px 0; z-index: 200; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--gray); font-size: 10px; font-weight: 500; cursor: pointer; width: 60px; }
+        .nav-item.active { color: var(--primary); }
+        .nav-icon { font-size: 24px; margin-bottom: 2px; }
+        .cart-count { position: absolute; top: 5px; right: 25%; background: var(--primary); color: var(--bg); font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; display: none; }
+
+        /* === PRINT STYLES === */
+        @media print {
+            body { background-color: white !important; color: black !important; padding: 0; margin: 0; }
+            body > *:not(#view-receipt) { display: none !important; }
+            #view-receipt { display: block !important; background: white; padding: 0; position: absolute; top: 0; left: 0; width: 100%; }
+            .receipt-actions, .app-header, .bottom-nav { display: none !important; }
+            .paper-sheet { box-shadow: none; padding: 0; width: 100%; max-width: 100%; border-radius: 0; }
+        }
     </style>
 </head>
 <body>
@@ -155,7 +149,6 @@
     <div id="view-inventory" class="view active">
         <div id="inventory-list" class="container"></div>
         <div class="fab admin-only" onclick="openModal(null)">+</div>
-        <div class="reset-link" onclick="hardReset()">Reset App Data</div>
     </div>
 
     <div id="view-checkout" class="view">
@@ -170,11 +163,10 @@
             <input type="text" id="clientName" class="form-input" placeholder="Client Name">
             <input type="email" id="clientEmail" class="form-input" placeholder="Client Email (for receipt)">
             <input type="date" id="returnDate" class="form-input">
-            
             <div class="signature-box">Sign Here</div>
             <div class="action-buttons">
                 <button class="btn-secondary" onclick="generateReceiptPreview()">📄 Generate Receipt</button>
-                <button class="btn-email" onclick="sendEmail()">✉️ Email</button>
+                <button class="btn-share" onclick="shareManifest()">📤 Share</button>
                 <button id="checkoutBtn" class="btn-primary" onclick="handleCheckout()">Done (Mark Rented)</button>
             </div>
             <button id="newOrderBtn" class="btn-new-order" onclick="startNewOrder()">Start New Rental ↻</button>
@@ -251,118 +243,48 @@
           measurementId: "G-ZGJ8SVC8T6"
         };
 
-        let app, db, auth;
-        
-        // --- SAFE INITIALIZATION ---
-        try {
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            console.log("Firebase Connected");
-        } catch (e) {
-            console.error("Firebase Init Error:", e);
-            alert("Connection Error. Using offline mode.");
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        window.appData = []; window.cart = {}; window.currentTypeFilter = 'ALL'; window.editingId = null; window.tempImageURL = ""; window.isAdmin = false; window.isCheckoutComplete = false;
+
+        // --- AUTO-SAVE CART LOGIC ---
+        function saveCartLocally() {
+            try { localStorage.setItem('invision_cart', JSON.stringify(window.cart)); } catch(e) {}
         }
-
-        // --- GLOBAL STATE ---
-        window.appData = []; 
-        window.cart = {}; 
-        window.currentTypeFilter = 'ALL';
-        window.editingId = null; 
-        window.tempImageURL = "";
-        window.isAdmin = false;
-        window.isCheckoutComplete = false;
-
-        // --- SAFE LOAD LOCAL STORAGE ---
         function loadCartLocally() {
             try {
                 const saved = localStorage.getItem('invision_cart');
-                if(saved) { 
-                    window.cart = JSON.parse(saved); 
-                    updateCartBadge();
-                    console.log("Cart loaded from memory");
-                }
-            } catch (e) {
-                console.error("Cart corrupted, clearing...");
-                localStorage.removeItem('invision_cart');
-                window.cart = {};
-            }
-        }
-        
-        function saveCartLocally() {
-            try {
-                localStorage.setItem('invision_cart', JSON.stringify(window.cart));
-            } catch(e) {
-                console.error("Save failed:", e);
-            }
+                if(saved) { window.cart = JSON.parse(saved); updateCartBadge(); }
+            } catch(e) { window.cart = {}; }
         }
 
-        // --- EMERGENCY RESET ---
-        window.hardReset = function() {
-            if(confirm("This will clear all local app data and refresh. Do this if the app is frozen.")) {
-                localStorage.clear();
-                window.location.reload();
-            }
-        }
+        onAuthStateChanged(auth, (user) => {
+            const btn = document.getElementById('authBtn');
+            if (user) { window.isAdmin = true; document.body.classList.add('admin-mode'); btn.innerText = "Log Out"; btn.classList.add('logged-in'); btn.onclick = handleLogout; } 
+            else { window.isAdmin = false; document.body.classList.remove('admin-mode'); btn.innerText = "Log In"; btn.classList.remove('logged-in'); btn.onclick = openLoginModal; }
+            renderList();
+        });
 
-        // --- AUTH LISTENER ---
-        if (auth) {
-            onAuthStateChanged(auth, (user) => {
-                const btn = document.getElementById('authBtn');
-                if (user) {
-                    window.isAdmin = true;
-                    document.body.classList.add('admin-mode');
-                    btn.innerText = "Log Out";
-                    btn.classList.add('logged-in');
-                    btn.onclick = handleLogout;
-                } else {
-                    window.isAdmin = false;
-                    document.body.classList.remove('admin-mode');
-                    btn.innerText = "Log In";
-                    btn.classList.remove('logged-in');
-                    btn.onclick = openLoginModal;
-                }
-                renderList();
-            });
-        }
-
-        // --- AUTH FUNCTIONS ---
         window.openLoginModal = () => { document.getElementById('loginModal').style.display = 'flex'; document.getElementById('loginError').style.display = 'none'; }
         window.closeLoginModal = () => { document.getElementById('loginModal').style.display = 'none'; }
         window.handleLogin = async () => {
-            const email = document.getElementById('loginEmail').value; 
-            const pass = document.getElementById('loginPassword').value;
-            try { 
-                await signInWithEmailAndPassword(auth, email, pass); 
-                closeLoginModal(); 
-            } catch (error) { 
-                document.getElementById('loginError').innerText = "Error: " + error.message; 
-                document.getElementById('loginError').style.display = 'block'; 
-            }
+            const email = document.getElementById('loginEmail').value; const pass = document.getElementById('loginPassword').value;
+            try { await signInWithEmailAndPassword(auth, email, pass); closeLoginModal(); } catch (error) { document.getElementById('loginError').innerText = "Error: " + error.message; document.getElementById('loginError').style.display = 'block'; }
         }
         window.handleLogout = async () => { if(confirm("Log out now?")) await signOut(auth); }
 
-        // --- FIRESTORE LISTENER ---
-        if(db) {
-            const q = query(collection(db, "gear"), orderBy("category"));
-            onSnapshot(q, (snapshot) => { 
-                window.appData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
-                renderList();
-                if(document.getElementById('view-checkout').classList.contains('active')) renderManifest();
-            });
-        } else {
-            // Fallback if DB fails
-            if (typeof inventory !== 'undefined') {
-                window.appData = inventory.map((item, idx) => ({ id: idx, ...item }));
-                renderList();
-            }
-        }
+        const q = query(collection(db, "gear"), orderBy("category"));
+        onSnapshot(q, (snapshot) => { 
+            window.appData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
+            renderList();
+            // Refresh manifest if open
+            if(document.getElementById('view-checkout').classList.contains('active')) renderManifest();
+        });
 
-        // --- INITIALIZE ---
+        // Load cart on startup
         loadCartLocally();
-
-
-        /* ======================== LOGIC FUNCTIONS ======================== */
 
         window.saveItem = async function() {
             if(!window.isAdmin) return;
@@ -388,7 +310,7 @@
             
             try { 
                 await batch.commit(); 
-                alert("Success! Items marked OUT.\n\nClick 'Generate Receipt' to print/email."); 
+                alert("Success! Items marked OUT.\n\nYou can now Print or Share the receipt."); 
                 window.isCheckoutComplete = true; 
                 document.getElementById('checkoutBtn').style.display = 'none'; 
                 document.getElementById('newOrderBtn').style.display = 'block'; 
@@ -404,7 +326,12 @@
             document.querySelector('.nav-item').click();
         }
 
+        // --- NEW SHARE & PRINT LOGIC ---
+        
         window.generateReceiptPreview = function() {
+            // Unload inventory to clear memory for printing
+            document.getElementById('inventory-list').innerHTML = '';
+            
             const client = document.getElementById('clientName').value || "Client";
             const date = document.getElementById('returnDate').value || "TBD";
             const tbody = document.getElementById('print-tbody');
@@ -429,8 +356,38 @@
         window.closeReceiptPreview = function() {
             switchTab('view-checkout', document.querySelectorAll('.nav-item')[1]);
             document.querySelector('.bottom-nav').style.display = 'flex';
+            // Re-render inventory
+            renderList();
         }
 
+        window.shareManifest = function() {
+            const client = document.getElementById('clientName').value || "Client";
+            const date = document.getElementById('returnDate').value || "TBD";
+            let text = `RENTAL MANIFEST\nClient: ${client}\nReturn: ${date}\n------------------\n\n`;
+            
+            const cartIds = Object.keys(window.cart);
+            if(cartIds.length === 0) { alert("Cart is empty!"); return; }
+            
+            cartIds.forEach(id => {
+                const item = window.appData.find(i => i.id === id);
+                const data = window.cart[id];
+                text += `[x${data.qty}] ${item.category} ${item.desc}\n`;
+                if(data.notes) text += `   Note: ${data.notes}\n`;
+                text += `\n`;
+            });
+            text += `------------------\n`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: `Rental: ${client}`,
+                    text: text
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(text).then(() => alert("Receipt copied to clipboard!"));
+            }
+        }
+
+        // --- UI ---
         window.renderList = function() {
             const listContainer = document.getElementById('inventory-list');
             listContainer.innerHTML = '';
@@ -475,7 +432,7 @@
             document.getElementById(viewId).classList.add('active'); 
             if(navItem) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); navItem.classList.add('active'); }
             const controls = document.getElementById('top-controls'); 
-            if(viewId === 'view-checkout' || viewId === 'view-receipt') { controls.style.display = 'none'; } else { controls.style.display = 'block'; }
+            if(viewId === 'view-checkout' || viewId === 'view-receipt') { controls.style.display = 'none'; renderManifest(); } else { controls.style.display = 'block'; }
             if(viewId === 'view-checkout') renderManifest(); 
         };
         window.updateCartBadge = () => { const count = Object.keys(window.cart).length; document.getElementById('cart-badge').innerText = count; document.getElementById('cart-badge').style.display = count > 0 ? 'block' : 'none'; };
@@ -496,27 +453,6 @@
                 row.innerHTML = `<div class="manifest-top"><div><div style="font-size:11px; font-weight:700; color:var(--primary);">${item.category}</div><div style="font-weight:600; color:var(--text);">${item.desc}</div></div><div class="remove-btn" onclick="removeFromCart('${item.id}')">✕</div></div><div class="manifest-controls"><div class="stepper"><button class="stepper-btn" onclick="adjustQty('${item.id}', -1)">-</button><div class="stepper-val">${cartData.qty}</div><button class="stepper-btn" onclick="adjustQty('${item.id}', 1)">+</button></div><input type="text" class="condition-input" value="${cartData.notes}" placeholder="Condition / Notes" oninput="updateCartItem('${item.id}', 'notes', this.value)"></div>`;
                 container.appendChild(row);
             });
-        }
-
-        window.sendEmail = () => {
-            const clientName = document.getElementById('clientName').value || "Client";
-            const clientEmail = document.getElementById('clientEmail').value;
-            const returnDate = document.getElementById('returnDate').value || "TBD";
-            const myEmail = "nelson.ramon.townsend@gmail.com"; 
-            const bossEmail = "nelson.townsend@live.com";
-            let body = `RENTAL MANIFEST\nClient: ${clientName}\nReturn: ${returnDate}\n----------------\n\n`;
-            const cartIds = Object.keys(window.cart);
-            if(cartIds.length === 0) { alert("Cart is empty!"); return; }
-            cartIds.forEach(id => {
-                const item = window.appData.find(i => i.id === id);
-                const data = window.cart[id];
-                body += `[x${data.qty}] ${item.category} ${item.desc}\n`;
-                if(data.notes) body += `Note: ${data.notes}\n`;
-            });
-            body += `\n----------------\nSigned by: ${clientName}`;
-            const subject = encodeURIComponent(`Gear Rental - ${clientName}`);
-            const bodyEnc = encodeURIComponent(body);
-            window.location.href = `mailto:${clientEmail}?bcc=${myEmail},${bossEmail}&subject=${subject}&body=${bodyEnc}`;
         }
     </script>
 </body>

@@ -26,15 +26,17 @@
         .auth-btn { font-size: 14px; font-weight: 600; cursor: pointer; padding: 8px 16px; color: var(--primary); border: 1px solid var(--primary); border-radius: 20px; background: rgba(100, 210, 255, 0.1); transition: all 0.2s; }
         .auth-btn.logged-in { border-color: var(--danger); color: var(--danger); background: rgba(255, 69, 58, 0.1); }
 
-        /* CONTROLS */
+        /* SCROLLABLE TABS */
         #top-controls { display: block; overflow: hidden; transition: max-height 0.3s ease; }
-        .segment-control { display: flex; background: var(--input-bg); border-radius: 9px; padding: 2px; margin-bottom: 10px; }
-        .segment-btn { flex: 1; border: none; background: none; padding: 6px; font-size: 13px; font-weight: 600; color: var(--gray); border-radius: 7px; cursor: pointer; }
+        .tab-scroller { overflow-x: auto; white-space: nowrap; padding-bottom: 5px; margin-bottom: 10px; -webkit-overflow-scrolling: touch; }
+        .segment-control { display: inline-flex; background: var(--input-bg); border-radius: 9px; padding: 2px; }
+        .segment-btn { border: none; background: none; padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--gray); border-radius: 7px; cursor: pointer; }
         .segment-btn.active { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        
+        /* SEARCH */
         .search-wrapper { position: relative; width: 100%; }
         .search-input { width: 100%; padding: 10px 35px 10px 15px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 16px; box-sizing: border-box; outline: none; }
         .search-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--gray); font-size: 16px; background: rgba(255,255,255,0.1); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; display: none; }
-        ::placeholder { color: var(--gray); }
 
         /* LIST */
         .container { max-width: 800px; margin: 0 auto; padding: 15px; }
@@ -54,7 +56,6 @@
         .admin-only { display: none !important; }
         body.admin-mode .admin-only { display: flex !important; }
         .edit-btn { padding: 10px; color: var(--gray); font-size: 18px; cursor: pointer; margin-left: auto; flex-shrink: 0; }
-        .edit-btn:hover { color: var(--primary); }
         .check-circle { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--gray); margin-right: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
         .inventory-item.selected .check-circle { background: var(--primary); border-color: var(--primary); }
         .inventory-item.selected .check-circle::after { content: '✓'; color: var(--bg); font-weight: bold; font-size: 14px; }
@@ -75,8 +76,6 @@
         
         .action-buttons { display: flex; gap: 10px; margin-top: 20px; overflow-x: auto; padding-bottom: 5px; }
         .form-input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 8px; margin-bottom: 5px; box-sizing: border-box; }
-        
-        /* BUTTONS */
         .btn-primary { background: var(--primary); color: var(--bg); border: none; padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 2; white-space: nowrap; }
         .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
         .btn-email { background: #34C759; color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
@@ -90,14 +89,36 @@
         .image-preview-box { width: 100%; height: 150px; background: var(--bg); border: 2px dashed var(--border); border-radius: 8px; margin-top: 5px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; cursor: pointer; }
         .image-preview-box img { width: 100%; height: 100%; object-fit: contain; display: none; }
         .image-preview-text { color: var(--gray); font-size: 14px; font-weight: 500; pointer-events: none; }
-
         .fab { position: fixed; bottom: 100px; right: 20px; width: 56px; height: 56px; background: var(--primary); border-radius: 50%; color: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 12px rgba(100, 210, 255, 0.4); cursor: pointer; z-index: 150; }
-
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(28, 28, 30, 0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 25px 0; z-index: 200; }
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--gray); font-size: 10px; font-weight: 500; cursor: pointer; width: 60px; }
         .nav-item.active { color: var(--primary); }
         .nav-icon { font-size: 24px; margin-bottom: 2px; }
         .cart-count { position: absolute; top: 5px; right: 25%; background: var(--primary); color: var(--bg); font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; display: none; }
+
+        /* === RECEIPT PREVIEW === */
+        #view-receipt { background: #555; min-height: 100vh; padding: 20px; display: none; }
+        #view-receipt.active { display: block; }
+        .paper-sheet { background: white; color: black; max-width: 700px; margin: 0 auto; padding: 40px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid black; padding-bottom: 20px; margin-bottom: 20px; }
+        .print-logo { height: 50px; }
+        .print-title { font-size: 24px; font-weight: bold; text-transform: uppercase; }
+        .print-meta { margin-bottom: 20px; line-height: 1.6; font-size: 14px; }
+        .print-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 30px; }
+        .print-table th { text-align: left; border-bottom: 1px solid black; padding: 8px; font-weight: bold; text-transform: uppercase; }
+        .print-table td { border-bottom: 1px solid #ccc; padding: 8px; }
+        .print-footer { margin-top: 60px; display: flex; justify-content: space-between; }
+        .sig-line { width: 40%; border-top: 1px solid black; padding-top: 10px; font-size: 12px; text-align: center; }
+        .legal-text { margin-top: 40px; font-size: 10px; color: #555; text-align: center; }
+        .receipt-actions { max-width: 700px; margin: 20px auto; display: flex; gap: 10px; }
+
+        @media print {
+            body { background-color: white !important; color: black !important; padding: 0; margin: 0; }
+            body > *:not(#view-receipt) { display: none !important; }
+            #view-receipt { display: block !important; background: white; padding: 0; position: absolute; top: 0; left: 0; width: 100%; }
+            .receipt-actions, .app-header, .bottom-nav { display: none !important; }
+            .paper-sheet { box-shadow: none; padding: 0; width: 100%; max-width: 100%; border-radius: 0; }
+        }
     </style>
 </head>
 <body>
@@ -112,11 +133,19 @@
         </div>
         
         <div id="top-controls">
-            <div class="segment-control">
-                <button class="segment-btn active" onclick="filterType('ALL', this)">All</button>
-                <button class="segment-btn" onclick="filterType('CAMERA', this)">Camera</button>
-                <button class="segment-btn" onclick="filterType('GRIP', this)">Grip</button>
+            <div class="tab-scroller">
+                <div class="segment-control">
+                    <button class="segment-btn active" onclick="filterType('ALL', this)">All</button>
+                    <button class="segment-btn" onclick="filterType('CAMERAS', this)">Cameras</button>
+                    <button class="segment-btn" onclick="filterType('MONITORS', this)">Monitors</button>
+                    <button class="segment-btn" onclick="filterType('BATTERIES', this)">Batteries</button>
+                    <button class="segment-btn" onclick="filterType('LENSES', this)">Lenses</button>
+                    <button class="segment-btn" onclick="filterType('FILTERS', this)">Filters</button>
+                    <button class="segment-btn" onclick="filterType('TRIPODS', this)">Tripods</button>
+                    <button class="segment-btn" onclick="filterType('GRIP', this)">Grip</button>
+                </div>
             </div>
+            
             <div class="search-wrapper">
                 <input type="text" class="search-input" id="searchBox" placeholder="Search..." onkeyup="handleSearch()">
                 <div id="clearBtn" class="search-clear" onclick="clearSearch()">✕</div>
@@ -144,11 +173,34 @@
             
             <div class="signature-box">Sign Here</div>
             <div class="action-buttons">
-                <button class="btn-secondary" onclick="openReceiptTab()">📄 Open Receipt</button>
+                <button class="btn-secondary" onclick="generateReceiptPreview()">📄 Generate Receipt</button>
                 <button class="btn-email" onclick="sendEmail()">✉️ Email</button>
                 <button id="checkoutBtn" class="btn-primary" onclick="handleCheckout()">Done (Mark Rented)</button>
             </div>
             <button id="newOrderBtn" class="btn-new-order" onclick="startNewOrder()">Start New Rental ↻</button>
+        </div>
+    </div>
+
+    <div id="view-receipt" class="view">
+        <div class="receipt-actions">
+            <button class="btn-secondary" onclick="closeReceiptPreview()">← Edit</button>
+            <button class="btn-primary" onclick="window.print()">🖨 Print / Share PDF</button>
+        </div>
+        <div class="paper-sheet">
+            <div class="print-header">
+                <img src="logo.png" class="print-logo" alt="Logo">
+                <div class="print-title">Rental Manifest</div>
+            </div>
+            <div id="print-meta" class="print-meta"></div>
+            <table class="print-table">
+                <thead><tr><th width="10%">Qty</th><th>Description</th><th>Serial Number</th><th>Condition / Notes</th></tr></thead>
+                <tbody id="print-tbody"></tbody>
+            </table>
+            <div class="print-footer">
+                <div class="sig-line">Authorized Signature</div>
+                <div class="sig-line">Client Signature</div>
+            </div>
+            <div class="legal-text">By signing above, client agrees to return equipment in original condition by the return date listed. Any damages will be billed to the client.</div>
         </div>
     </div>
 
@@ -162,7 +214,15 @@
             </div>
             <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleImageUpload(this)">
             <label class="form-label">Placement</label>
-            <select id="itemType" class="form-input"><option value="Camera">Camera Dept</option><option value="Grip">Grip Dept</option></select>
+            <select id="itemType" class="form-input">
+                <option value="CAMERAS">Cameras</option>
+                <option value="MONITORS">Monitors</option>
+                <option value="BATTERIES">Batteries</option>
+                <option value="LENSES">Lenses</option>
+                <option value="FILTERS">Filters</option>
+                <option value="TRIPODS">Tripods</option>
+                <option value="GRIP">Grip</option>
+            </select>
             <label class="form-label">Brand</label>
             <input type="text" id="itemCategory" class="form-input" placeholder="e.g. Sony">
             <label class="form-label">Item Name</label>
@@ -222,25 +282,11 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // STATE
-        window.appData = []; 
-        window.cart = {}; 
-        window.currentTypeFilter = 'ALL';
-        window.editingId = null; 
-        window.tempImageURL = "";
-        window.isAdmin = false;
-        window.isCheckoutComplete = false;
+        window.appData = []; window.cart = {}; window.currentTypeFilter = 'ALL'; window.editingId = null; window.tempImageURL = ""; window.isAdmin = false; window.isCheckoutComplete = false;
 
         // --- AUTO-SAVE ---
-        function saveCartLocally() {
-            try { localStorage.setItem('invision_cart', JSON.stringify(window.cart)); } catch(e) {}
-        }
-        function loadCartLocally() {
-            try {
-                const saved = localStorage.getItem('invision_cart');
-                if(saved) { window.cart = JSON.parse(saved); updateCartBadge(); }
-            } catch(e) { window.cart = {}; }
-        }
+        function saveCartLocally() { try { localStorage.setItem('invision_cart', JSON.stringify(window.cart)); } catch(e) {} }
+        function loadCartLocally() { try { const saved = localStorage.getItem('invision_cart'); if(saved) { window.cart = JSON.parse(saved); updateCartBadge(); } } catch(e) { window.cart = {}; } }
 
         onAuthStateChanged(auth, (user) => {
             const btn = document.getElementById('authBtn');
@@ -253,8 +299,7 @@
         window.closeLoginModal = () => { document.getElementById('loginModal').style.display = 'none'; }
         window.handleLogin = async () => {
             const email = document.getElementById('loginEmail').value; const pass = document.getElementById('loginPassword').value;
-            try { await signInWithEmailAndPassword(auth, email, pass); closeLoginModal(); } 
-            catch (error) { document.getElementById('loginError').innerText = "Error: " + error.message; document.getElementById('loginError').style.display = 'block'; }
+            try { await signInWithEmailAndPassword(auth, email, pass); closeLoginModal(); } catch (error) { document.getElementById('loginError').innerText = "Error: " + error.message; document.getElementById('loginError').style.display = 'block'; }
         }
         window.handleLogout = async () => { if(confirm("Log out now?")) await signOut(auth); }
 
@@ -291,7 +336,7 @@
             
             try { 
                 await batch.commit(); 
-                alert("Success! Items marked OUT."); 
+                alert("Success! Items marked OUT.\n\nClick 'Generate Receipt' to print/email."); 
                 window.isCheckoutComplete = true; 
                 document.getElementById('checkoutBtn').style.display = 'none'; 
                 document.getElementById('newOrderBtn').style.display = 'block'; 
@@ -307,51 +352,27 @@
             document.querySelector('.nav-item').click();
         }
 
-        // --- NEW TAB RECEIPT METHOD ---
-        window.openReceiptTab = function() {
+        window.generateReceiptPreview = function() {
             const client = document.getElementById('clientName').value || "Client";
             const date = document.getElementById('returnDate').value || "TBD";
+            const tbody = document.getElementById('print-tbody');
+            const meta = document.getElementById('print-meta');
             const cartIds = Object.keys(window.cart);
             if(cartIds.length === 0) { alert("Cart is empty"); return; }
-            
-            // Generate clean HTML for the new tab
-            let html = `<html><head><title>Receipt - ${client}</title><style>
-                body { font-family: sans-serif; padding: 40px; color: black; max-width: 800px; margin: 0 auto; }
-                .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid black; padding-bottom: 20px; margin-bottom: 20px; }
-                .logo { height: 60px; }
-                .title { font-size: 28px; font-weight: bold; text-transform: uppercase; }
-                .meta { font-size: 16px; margin-bottom: 30px; line-height: 1.6; }
-                table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 40px; }
-                th { text-align: left; border-bottom: 2px solid black; padding: 10px; }
-                td { border-bottom: 1px solid #ccc; padding: 10px; }
-                .footer { margin-top: 80px; display: flex; justify-content: space-between; }
-                .sig-box { width: 40%; border-top: 1px solid black; padding-top: 10px; text-align: center; }
-                .legal { margin-top: 50px; font-size: 11px; color: #555; text-align: center; }
-                @media print { .no-print { display: none; } }
-                .print-btn { background: #007AFF; color: white; padding: 10px 20px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; margin-bottom: 20px; }
-            </style></head><body>`;
-            
-            // Add Logo if it exists
-            html += `<div class="header"><img src="logo.png" class="logo"><div class="title">Rental Manifest</div></div>`;
-            html += `<div class="no-print"><button class="print-btn" onclick="window.print()">🖨 Print / Save PDF</button></div>`;
-            html += `<div class="meta">Client: <b>${client}</b><br>Return Date: <b>${date}</b><br>Date Issued: ${new Date().toLocaleDateString()}</div>`;
-            
-            html += `<table><thead><tr><th>Qty</th><th>Description</th><th>Serial</th><th>Notes</th></tr></thead><tbody>`;
-            
+            meta.innerHTML = `Client: <b>${client}</b><br>Return Date: <b>${date}</b><br>Date Issued: ${new Date().toLocaleDateString()}`;
+            tbody.innerHTML = '';
             cartIds.forEach(id => {
                 const item = window.appData.find(i => i.id === id);
                 const data = window.cart[id];
-                html += `<tr><td style="text-align:center;">${data.qty}</td><td><b>${item.category}</b> ${item.desc}</td><td>${item.sn}</td><td>${data.notes || ''}</td></tr>`;
+                tbody.innerHTML += `<tr><td style="text-align:center;">${data.qty}</td><td><b>${item.category}</b> ${item.desc}</td><td>${item.sn}</td><td>${data.notes || '-'}</td></tr>`;
             });
-            
-            html += `</tbody></table>`;
-            html += `<div class="footer"><div class="sig-box">Authorized Signature</div><div class="sig-box">Client Signature</div></div>`;
-            html += `<div class="legal">By signing above, client agrees to return equipment in original condition by the return date listed.</div>`;
-            html += `</body></html>`;
-            
-            const newWindow = window.open();
-            newWindow.document.write(html);
-            newWindow.document.close();
+            switchTab('view-receipt', document.querySelector('.nav-item')); 
+            document.querySelector('.bottom-nav').style.display = 'none';
+        }
+
+        window.closeReceiptPreview = function() {
+            switchTab('view-checkout', document.querySelectorAll('.nav-item')[1]);
+            document.querySelector('.bottom-nav').style.display = 'flex';
         }
 
         window.renderList = function() {
@@ -360,10 +381,44 @@
             const query = document.getElementById('searchBox').value.toLowerCase();
             const filteredItems = window.appData.filter(item => {
                 const matchesSearch = (item.desc || "").toLowerCase().includes(query) || (item.category || "").toLowerCase().includes(query);
-                const matchesType = window.currentTypeFilter === 'ALL' || (item.type || "").toUpperCase() === window.currentTypeFilter;
-                return matchesSearch && matchesType;
+                
+                // FILTER LOGIC
+                let matchesType = false;
+                if(window.currentTypeFilter === 'ALL') matchesType = true;
+                else {
+                    // Normalize the item type from Cloud
+                    let itemType = (item.type || "").toUpperCase(); 
+                    // Map "Camera" -> Matches CAMERAS, LENSES, FILTERS, MONITORS, BATTERIES
+                    if(window.currentTypeFilter === 'CAMERAS' && itemType === 'CAMERA') matchesType = true;
+                    else if(window.currentTypeFilter === 'GRIP' && itemType === 'GRIP') matchesType = true;
+                    // For now, if we don't have detailed tags in DB, fallback:
+                    else if(window.currentTypeFilter === itemType) matchesType = true;
+                }
+                // To support new tabs (LENSES, FILTERS etc), we need to update the data in Firebase
+                // For now, "ALL" works. 
+                
+                return matchesSearch; // Simplified for now to ensure list shows
             });
-            filteredItems.forEach(item => {
+
+            // Since we need to support the new tabs but the DB only has "Camera" and "Grip" tags:
+            // We do a "Smart Filter" based on keywords in the description
+            const finalFiltered = filteredItems.filter(item => {
+                if (window.currentTypeFilter === 'ALL') return true;
+                
+                const txt = (item.category + " " + item.desc).toUpperCase();
+                
+                if (window.currentTypeFilter === 'CAMERAS') return (item.type === 'Camera' && !txt.includes('LENS') && !txt.includes('FILTER') && !txt.includes('MONITOR') && !txt.includes('BATTERY'));
+                if (window.currentTypeFilter === 'LENSES') return txt.includes('LENS');
+                if (window.currentTypeFilter === 'MONITORS') return txt.includes('MONITOR');
+                if (window.currentTypeFilter === 'BATTERIES') return txt.includes('BATTERY') || txt.includes('CHARGER');
+                if (window.currentTypeFilter === 'FILTERS') return txt.includes('FILTER') || txt.includes('ND') || txt.includes('POLA');
+                if (window.currentTypeFilter === 'TRIPODS') return txt.includes('TRIPOD') || txt.includes('HEAD');
+                if (window.currentTypeFilter === 'GRIP') return item.type === 'Grip';
+                
+                return false;
+            });
+
+            finalFiltered.forEach(item => {
                 const id = item.id; const isSelected = window.cart.hasOwnProperty(id); const isRented = item.status === "OUT";
                 const el = document.createElement('div'); el.className = `inventory-item ${isSelected ? 'selected' : ''} ${isRented ? 'rented' : ''}`;
                 let imageHTML = `<div class="item-thumb">📷</div>`; if(item.image) { imageHTML = `<div class="item-thumb"><img src="${item.image}"></div>`; }
@@ -379,10 +434,11 @@
             document.getElementById('fileInput').value = ""; imgPrev.src = ""; imgPrev.style.display = "none"; document.getElementById('previewText').style.display = "block"; window.tempImageURL = "";
             if (id === null) {
                 window.editingId = null; title.innerText = "Add New Item";
-                document.getElementById('itemType').value = "Camera"; document.getElementById('itemCategory').value = ""; document.getElementById('itemDesc').value = ""; document.getElementById('itemSerial').value = ""; document.getElementById('itemQty').value = "1";
+                document.getElementById('itemType').value = "CAMERAS"; 
             } else {
                 window.editingId = id; const item = window.appData.find(i => i.id === id); title.innerText = "Edit Item";
-                document.getElementById('itemType').value = item.type; document.getElementById('itemCategory').value = item.category; document.getElementById('itemDesc').value = item.desc; document.getElementById('itemSerial').value = item.sn; document.getElementById('itemQty').value = item.qty;
+                document.getElementById('itemType').value = "CAMERAS"; // Default, user can change
+                document.getElementById('itemCategory').value = item.category; document.getElementById('itemDesc').value = item.desc; document.getElementById('itemSerial').value = item.sn; document.getElementById('itemQty').value = item.qty;
                 if(item.image) { imgPrev.src = item.image; imgPrev.style.display = "block"; document.getElementById('previewText').style.display = "none"; window.tempImageURL = item.image; }
             }
             modal.style.display = 'flex';
@@ -398,7 +454,7 @@
             document.getElementById(viewId).classList.add('active'); 
             if(navItem) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); navItem.classList.add('active'); }
             const controls = document.getElementById('top-controls'); 
-            if(viewId === 'view-checkout') { controls.style.display = 'none'; renderManifest(); } else { controls.style.display = 'block'; }
+            if(viewId === 'view-checkout' || viewId === 'view-receipt') { controls.style.display = 'none'; renderManifest(); } else { controls.style.display = 'block'; }
             if(viewId === 'view-checkout') renderManifest(); 
         };
         window.updateCartBadge = () => { const count = Object.keys(window.cart).length; document.getElementById('cart-badge').innerText = count; document.getElementById('cart-badge').style.display = count > 0 ? 'block' : 'none'; };

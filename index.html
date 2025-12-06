@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Invision Media</title>
+    <title>iNVISION MEDIA LLC</title>
     
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
@@ -20,7 +20,18 @@
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; width: 100%; min-height: 45px; }
         .logo-container { flex: 1; display: flex; align-items: center; justify-content: flex-start; overflow: hidden; } 
         .company-logo { max-height: 40px; max-width: 60px; object-fit: contain; margin-right: 10px; }
-        .brand-name { font-family: 'Arial Black', sans-serif; font-size: 20px; font-weight: 900; color: black; -webkit-text-stroke: 1px var(--primary); text-transform: uppercase; letter-spacing: -0.5px; white-space: nowrap; }
+        
+        /* UPDATED BRAND NAME STYLE (No Uppercase Force) */
+        .brand-name { 
+            font-family: 'Arial Black', sans-serif; 
+            font-size: 18px; /* Slightly adjusted to fit LLC */
+            font-weight: 900; 
+            color: black; 
+            -webkit-text-stroke: 1px var(--primary); 
+            letter-spacing: -0.5px; 
+            white-space: nowrap; 
+        }
+        
         .admin-lock { font-size: 24px; cursor: pointer; padding: 10px; color: var(--gray); flex-shrink: 0; margin-left: 15px; background: rgba(255,255,255,0.05); border-radius: 50%; } 
         .admin-lock.unlocked { color: var(--primary); }
         .auth-btn { font-size: 14px; font-weight: 600; cursor: pointer; padding: 8px 16px; color: var(--primary); border: 1px solid var(--primary); border-radius: 20px; background: rgba(100, 210, 255, 0.1); transition: all 0.2s; }
@@ -33,13 +44,10 @@
         .segment-control { display: inline-flex; background: var(--input-bg); border-radius: 9px; padding: 2px; }
         .segment-btn { border: none; background: none; padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--gray); border-radius: 7px; cursor: pointer; margin-right: 2px; }
         .segment-btn.active { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-        .search-wrapper { position: relative; width: 100%; display: flex; gap: 10px; }
+        .search-wrapper { position: relative; width: 100%; }
         .search-input { width: 100%; padding: 10px 35px 10px 15px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 16px; box-sizing: border-box; outline: none; }
         .search-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--gray); font-size: 16px; background: rgba(255,255,255,0.1); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; display: none; }
         ::placeholder { color: var(--gray); }
-        
-        /* NEW DESELECT BUTTON */
-        .deselect-btn { background: var(--gray); color: black; border: none; border-radius: 10px; padding: 0 15px; font-weight: 600; font-size: 13px; cursor: pointer; white-space: nowrap; display: none; }
 
         /* LIST */
         .container { max-width: 800px; margin: 0 auto; padding: 15px; }
@@ -54,7 +62,7 @@
         .item-name { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.25; }
         .item-meta { font-size: 12px; color: var(--gray); font-family: monospace; display: flex; gap: 8px; align-items: center; margin-top: 2px; }
         .qty-badge { background: var(--input-bg); color: var(--text); padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 10px; border: 1px solid var(--border); }
-        .checkin-btn { background: var(--input-bg); color: #32D74B; font-weight: bold; font-size: 10px; padding: 6px 10px; border-radius: 6px; border: 1px solid #32D74B; cursor: pointer; margin-left: auto; z-index: 10; }
+        .checkin-btn { background: var(--input-bg); color: #32D74B; font-weight: bold; font-size: 10px; padding: 6px 10px; border-radius: 6px; border: 1px solid #32D74B; cursor: pointer; margin-left: auto; }
         
         .admin-only { display: none !important; }
         body.admin-mode .admin-only { display: flex !important; }
@@ -82,7 +90,6 @@
         .btn-primary { background: var(--primary); color: var(--bg); border: none; padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 2; white-space: nowrap; }
         .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
         .btn-email { background: #34C759; color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
-        .btn-share { background: var(--share); color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
         .btn-new-order { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; margin-top: 10px; display: none; }
 
         /* RECEIPT VIEW */
@@ -132,7 +139,7 @@
         <div class="header-top">
             <div class="logo-container">
                 <img src="logo.png" alt="Invision Media" class="company-logo" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';">
-                <span id="logo-text" class="brand-name">INVISION MEDIA</span>
+                <span id="logo-text" class="brand-name">iNVISION MEDIA LLC</span>
             </div>
             <button id="authBtn" class="auth-btn" onclick="openLoginModal()">Log In</button>
         </div>
@@ -154,10 +161,7 @@
             </div>
             <div class="search-wrapper">
                 <input type="text" class="search-input" id="searchBox" placeholder="Search..." onkeyup="handleSearch()">
-                <div style="position:relative; display:flex; align-items:center;">
-                    <div id="clearBtn" class="search-clear" onclick="clearSearch()">✕</div>
-                    <button id="deselectBtn" class="deselect-btn" onclick="clearSelection()" style="margin-left:5px;">Clear</button>
-                </div>
+                <div id="clearBtn" class="search-clear" onclick="clearSearch()">✕</div>
             </div>
         </div>
     </div>
@@ -183,7 +187,6 @@
             <div class="signature-box">Sign Here</div>
             <div class="action-buttons">
                 <button class="btn-secondary" onclick="generateReceiptPreview()">📄 Generate Receipt</button>
-                <button class="btn-share" onclick="shareManifest()">📤 Share</button>
                 <button id="checkoutBtn" class="btn-primary" onclick="handleCheckout()">Done (Mark Rented)</button>
             </div>
             <button id="newOrderBtn" class="btn-new-order" onclick="startNewOrder()">Start New Rental ↻</button>
@@ -217,10 +220,7 @@
         <div class="modal-content">
             <h2 id="modalTitle" style="margin-top:0;">Add New Item</h2>
             <label class="form-label">Item Photo</label>
-            <div class="image-preview-box" onclick="document.getElementById('fileInput').click()">
-                <span id="previewText" class="image-preview-text">Tap to Upload Photo</span>
-                <img id="imagePreview" src="">
-            </div>
+            <div class="image-preview-box" onclick="document.getElementById('fileInput').click()"><span id="previewText" class="image-preview-text">Tap to Upload Photo</span><img id="imagePreview" src=""></div>
             <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleImageUpload(this)">
             <label class="form-label">Placement</label>
             <select id="itemType" class="form-input">
@@ -287,7 +287,7 @@
         function loadCartLocally() {
             try {
                 const saved = localStorage.getItem('invision_cart');
-                if(saved) { window.cart = JSON.parse(saved); updateCartBadge(); updateClearButton(); }
+                if(saved) { window.cart = JSON.parse(saved); updateCartBadge(); }
             } catch(e) { window.cart = {}; }
         }
 
@@ -350,29 +350,13 @@
         
         window.startNewOrder = () => {
             if(!confirm("Clear receipt and start new order?")) return;
-            window.cart = {}; saveCartLocally(); updateCartBadge(); updateClearButton(); renderManifest();
+            window.cart = {}; saveCartLocally(); updateCartBadge(); renderManifest();
             document.getElementById('clientName').value = ""; document.getElementById('clientEmail').value = ""; document.getElementById('returnDate').value = "";
             window.isCheckoutComplete = false; document.getElementById('checkoutBtn').style.display = 'block'; document.getElementById('newOrderBtn').style.display = 'none';
             document.querySelector('.nav-item').click();
         }
 
-        // --- NEW CLEAR SELECTION LOGIC ---
-        window.clearSelection = () => {
-            if(Object.keys(window.cart).length === 0) return;
-            if(!confirm("Clear all selected items?")) return;
-            window.cart = {};
-            saveCartLocally();
-            updateCartBadge();
-            updateClearButton();
-            renderList(); // Refresh list to remove highlights
-        }
-        
-        function updateClearButton() {
-            const hasItems = Object.keys(window.cart).length > 0;
-            document.getElementById('deselectBtn').style.display = hasItems ? 'block' : 'none';
-        }
-
-        // --- RECEIPT PREVIEW ---
+        // --- RECEIPT PREVIEW LOGIC ---
         window.generateReceiptPreview = function() {
             const client = document.getElementById('clientName').value || "Client";
             const date = document.getElementById('returnDate').value || "TBD";
@@ -398,35 +382,6 @@
         window.closeReceiptPreview = function() {
             switchTab('view-checkout', document.querySelectorAll('.nav-item')[1]);
             document.querySelector('.bottom-nav').style.display = 'flex';
-            // Re-render inventory
-            renderList();
-        }
-
-        window.shareManifest = function() {
-            const client = document.getElementById('clientName').value || "Client";
-            const date = document.getElementById('returnDate').value || "TBD";
-            let text = `RENTAL MANIFEST\nClient: ${client}\nReturn: ${date}\n------------------\n\n`;
-            
-            const cartIds = Object.keys(window.cart);
-            if(cartIds.length === 0) { alert("Cart is empty!"); return; }
-            
-            cartIds.forEach(id => {
-                const item = window.appData.find(i => i.id === id);
-                const data = window.cart[id];
-                text += `[x${data.qty}] ${item.category} ${item.desc} (${item.sn})\n`;
-                if(data.notes) text += `   Note: ${data.notes}\n`;
-                text += `\n`;
-            });
-            text += `------------------\n`;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: `Rental: ${client}`,
-                    text: text
-                }).catch(console.error);
-            } else {
-                navigator.clipboard.writeText(text).then(() => alert("Receipt copied to clipboard!"));
-            }
         }
 
         window.renderList = function() {
@@ -435,10 +390,42 @@
             const query = document.getElementById('searchBox').value.toLowerCase();
             const filteredItems = window.appData.filter(item => {
                 const matchesSearch = (item.desc || "").toLowerCase().includes(query) || (item.category || "").toLowerCase().includes(query);
-                const matchesType = window.currentTypeFilter === 'ALL' || (item.type || "").toUpperCase() === window.currentTypeFilter;
-                return matchesSearch && matchesType;
+                
+                // FILTER LOGIC
+                let matchesType = false;
+                if(window.currentTypeFilter === 'ALL') matchesType = true;
+                else {
+                    // Normalize the item type from Cloud
+                    let itemType = (item.type || "").toUpperCase(); 
+                    if(window.currentTypeFilter === 'CAMERAS' && itemType === 'CAMERA') matchesType = true;
+                    else if(window.currentTypeFilter === 'GRIP' && itemType === 'GRIP') matchesType = true;
+                    else if(window.currentTypeFilter === itemType) matchesType = true;
+                }
+                
+                return matchesSearch; 
             });
-            filteredItems.forEach(item => {
+
+            // Since we need to support the new tabs but the DB only has "Camera" and "Grip" tags:
+            // We do a "Smart Filter" based on keywords in the description
+            const finalFiltered = filteredItems.filter(item => {
+                if (window.currentTypeFilter === 'ALL') return true;
+                
+                const txt = (item.category + " " + item.desc).toUpperCase();
+                
+                if (window.currentTypeFilter === 'CAMERAS') return (item.type === 'Camera' && !txt.includes('LENS') && !txt.includes('FILTER') && !txt.includes('MONITOR') && !txt.includes('BATTERY'));
+                if (window.currentTypeFilter === 'LENSES') return txt.includes('LENS');
+                if (window.currentTypeFilter === 'MONITORS') return txt.includes('MONITOR');
+                if (window.currentTypeFilter === 'BATTERIES') return txt.includes('BATTERY') || txt.includes('CHARGER');
+                if (window.currentTypeFilter === 'FILTERS') return txt.includes('FILTER') || txt.includes('ND') || txt.includes('POLA');
+                if (window.currentTypeFilter === 'TRIPODS') return txt.includes('TRIPOD') || txt.includes('HEAD');
+                if (window.currentTypeFilter === 'GRIP') return item.type === 'Grip';
+                if (window.currentTypeFilter === 'AUDIO') return item.type === 'Audio';
+                if (window.currentTypeFilter === 'LIGHTING') return item.type === 'Lighting';
+                
+                return false;
+            });
+
+            finalFiltered.forEach(item => {
                 const id = item.id; const isSelected = window.cart.hasOwnProperty(id); const isRented = item.status === "OUT";
                 const el = document.createElement('div'); el.className = `inventory-item ${isSelected ? 'selected' : ''} ${isRented ? 'rented' : ''}`;
                 let imageHTML = `<div class="item-thumb">📷</div>`; if(item.image) { imageHTML = `<div class="item-thumb"><img src="${item.image}"></div>`; }
@@ -474,8 +461,7 @@
             document.getElementById(viewId).classList.add('active'); 
             if(navItem) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); navItem.classList.add('active'); }
             const controls = document.getElementById('top-controls'); 
-            // Hide top controls for checkout OR receipt view
-            if(viewId === 'view-checkout' || viewId === 'view-receipt') { controls.style.display = 'none'; } else { controls.style.display = 'block'; }
+            if(viewId === 'view-checkout' || viewId === 'view-receipt') { controls.style.display = 'none'; renderManifest(); } else { controls.style.display = 'block'; }
             if(viewId === 'view-checkout') renderManifest(); 
         };
         window.updateCartBadge = () => { const count = Object.keys(window.cart).length; document.getElementById('cart-badge').innerText = count; document.getElementById('cart-badge').style.display = count > 0 ? 'block' : 'none'; };
@@ -496,27 +482,6 @@
                 row.innerHTML = `<div class="manifest-top"><div><div style="font-size:11px; font-weight:700; color:var(--primary);">${item.category}</div><div style="font-weight:600; color:var(--text);">${item.desc}</div></div><div class="remove-btn" onclick="removeFromCart('${item.id}')">✕</div></div><div class="manifest-controls"><div class="stepper"><button class="stepper-btn" onclick="adjustQty('${item.id}', -1)">-</button><div class="stepper-val">${cartData.qty}</div><button class="stepper-btn" onclick="adjustQty('${item.id}', 1)">+</button></div><input type="text" class="condition-input" value="${cartData.notes}" placeholder="Condition / Notes" oninput="updateCartItem('${item.id}', 'notes', this.value)"></div>`;
                 container.appendChild(row);
             });
-        }
-
-        window.sendEmail = () => {
-            const clientName = document.getElementById('clientName').value || "Client";
-            const clientEmail = document.getElementById('clientEmail').value;
-            const returnDate = document.getElementById('returnDate').value || "TBD";
-            const myEmail = "nelson.ramon.townsend@gmail.com"; 
-            const bossEmail = "nelson.townsend@live.com";
-            let body = `RENTAL MANIFEST\nClient: ${clientName}\nReturn: ${returnDate}\n----------------\n\n`;
-            const cartIds = Object.keys(window.cart);
-            if(cartIds.length === 0) { alert("Cart is empty!"); return; }
-            cartIds.forEach(id => {
-                const item = window.appData.find(i => i.id === id);
-                const data = window.cart[id];
-                body += `[x${data.qty}] ${item.category} ${item.desc}\n`;
-                if(data.notes) body += `Note: ${data.notes}\n`;
-            });
-            body += `\n----------------\nSigned by: ${clientName}`;
-            const subject = encodeURIComponent(`Gear Rental - ${clientName}`);
-            const bodyEnc = encodeURIComponent(body);
-            window.location.href = `mailto:${clientEmail}?bcc=${myEmail},${bossEmail}&subject=${subject}&body=${bodyEnc}`;
         }
     </script>
 </body>

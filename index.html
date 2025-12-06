@@ -20,18 +20,7 @@
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; width: 100%; min-height: 45px; }
         .logo-container { flex: 1; display: flex; align-items: center; justify-content: flex-start; overflow: hidden; } 
         .company-logo { max-height: 40px; max-width: 60px; object-fit: contain; margin-right: 10px; }
-        
-        /* UPDATED BRAND NAME STYLE (No Uppercase Force) */
-        .brand-name { 
-            font-family: 'Arial Black', sans-serif; 
-            font-size: 18px; /* Slightly adjusted to fit LLC */
-            font-weight: 900; 
-            color: black; 
-            -webkit-text-stroke: 1px var(--primary); 
-            letter-spacing: -0.5px; 
-            white-space: nowrap; 
-        }
-        
+        .brand-name { font-family: 'Arial Black', sans-serif; font-size: 18px; font-weight: 900; color: black; -webkit-text-stroke: 1px var(--primary); text-transform: uppercase; letter-spacing: -0.5px; white-space: nowrap; }
         .admin-lock { font-size: 24px; cursor: pointer; padding: 10px; color: var(--gray); flex-shrink: 0; margin-left: 15px; background: rgba(255,255,255,0.05); border-radius: 50%; } 
         .admin-lock.unlocked { color: var(--primary); }
         .auth-btn { font-size: 14px; font-weight: 600; cursor: pointer; padding: 8px 16px; color: var(--primary); border: 1px solid var(--primary); border-radius: 20px; background: rgba(100, 210, 255, 0.1); transition: all 0.2s; }
@@ -89,7 +78,7 @@
         .form-input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 8px; margin-bottom: 5px; box-sizing: border-box; }
         .btn-primary { background: var(--primary); color: var(--bg); border: none; padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 2; white-space: nowrap; }
         .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
-        .btn-email { background: #34C759; color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
+        .btn-share { background: var(--share); color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
         .btn-new-order { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; margin-top: 10px; display: none; }
 
         /* RECEIPT VIEW */
@@ -122,18 +111,18 @@
         .nav-item.active { color: var(--primary); }
         .nav-icon { font-size: 24px; margin-bottom: 2px; }
         .cart-count { position: absolute; top: 5px; right: 25%; background: var(--primary); color: var(--bg); font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; display: none; }
+        
+        /* IFRAME FOR PRINTING */
+        #printFrame { position: absolute; top: -10000px; left: -10000px; width: 1px; height: 1px; }
 
-        /* === PRINT OVERRIDES === */
         @media print {
-            body { background-color: white !important; color: black !important; padding: 0; margin: 0; }
-            body > *:not(#view-receipt) { display: none !important; }
-            #view-receipt { display: block !important; background: white !important; padding: 0; position: absolute; top: 0; left: 0; width: 100%; }
-            .receipt-actions, .app-header, .bottom-nav { display: none !important; }
-            .paper-sheet { box-shadow: none !important; padding: 0 !important; width: 100%; max-width: 100%; border-radius: 0; }
+            body { display: none; } /* Hide main body on print to prevent mess */
         }
     </style>
 </head>
 <body>
+
+    <iframe id="printFrame"></iframe>
 
     <div class="app-header">
         <div class="header-top">
@@ -162,6 +151,7 @@
             <div class="search-wrapper">
                 <input type="text" class="search-input" id="searchBox" placeholder="Search..." onkeyup="handleSearch()">
                 <div id="clearBtn" class="search-clear" onclick="clearSearch()">✕</div>
+                <button id="deselectBtn" class="deselect-btn" onclick="clearSelection()" style="margin-left:5px; background:var(--gray); color:black; border:none; border-radius:10px; padding:0 15px; font-weight:600; font-size:13px; cursor:pointer; display:none;">Clear</button>
             </div>
         </div>
     </div>
@@ -196,9 +186,9 @@
     <div id="view-receipt" class="view">
         <div class="receipt-actions">
             <button class="btn-secondary" onclick="closeReceiptPreview()">← Edit</button>
-            <button class="btn-primary" onclick="window.print()">🖨 Print / Share PDF</button>
+            <button class="btn-primary" onclick="printViaIframe()">🖨 Print / Share PDF</button>
         </div>
-        <div class="paper-sheet">
+        <div id="receipt-content" class="paper-sheet">
             <div class="print-header">
                 <img src="logo.png" class="print-logo" alt="Logo">
                 <div class="print-title">Rental Manifest</div>
@@ -220,7 +210,10 @@
         <div class="modal-content">
             <h2 id="modalTitle" style="margin-top:0;">Add New Item</h2>
             <label class="form-label">Item Photo</label>
-            <div class="image-preview-box" onclick="document.getElementById('fileInput').click()"><span id="previewText" class="image-preview-text">Tap to Upload Photo</span><img id="imagePreview" src=""></div>
+            <div class="image-preview-box" onclick="document.getElementById('fileInput').click()">
+                <span id="previewText" class="image-preview-text">Tap to Upload Photo</span>
+                <img id="imagePreview" src="">
+            </div>
             <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleImageUpload(this)">
             <label class="form-label">Placement</label>
             <select id="itemType" class="form-input">
@@ -280,14 +273,13 @@
 
         window.appData = []; window.cart = {}; window.currentTypeFilter = 'ALL'; window.editingId = null; window.tempImageURL = ""; window.isAdmin = false; window.isCheckoutComplete = false;
 
-        // --- AUTO-SAVE CART LOGIC ---
         function saveCartLocally() {
             try { localStorage.setItem('invision_cart', JSON.stringify(window.cart)); } catch(e) {}
         }
         function loadCartLocally() {
             try {
                 const saved = localStorage.getItem('invision_cart');
-                if(saved) { window.cart = JSON.parse(saved); updateCartBadge(); }
+                if(saved) { window.cart = JSON.parse(saved); updateCartBadge(); updateClearButton(); }
             } catch(e) { window.cart = {}; }
         }
 
@@ -339,8 +331,7 @@
             
             try { 
                 await batch.commit(); 
-                alert("Success! Items marked OUT.\n\nYou can now Print or Email the receipt.\nClick 'Start New Rental' when finished.");
-                
+                alert("Success! Items marked OUT.\n\nYou can now Print or Share the receipt."); 
                 window.isCheckoutComplete = true; 
                 document.getElementById('checkoutBtn').style.display = 'none'; 
                 document.getElementById('newOrderBtn').style.display = 'block'; 
@@ -350,14 +341,50 @@
         
         window.startNewOrder = () => {
             if(!confirm("Clear receipt and start new order?")) return;
-            window.cart = {}; saveCartLocally(); updateCartBadge(); renderManifest();
+            window.cart = {}; saveCartLocally(); updateCartBadge(); updateClearButton(); renderManifest();
             document.getElementById('clientName').value = ""; document.getElementById('clientEmail').value = ""; document.getElementById('returnDate').value = "";
             window.isCheckoutComplete = false; document.getElementById('checkoutBtn').style.display = 'block'; document.getElementById('newOrderBtn').style.display = 'none';
             document.querySelector('.nav-item').click();
         }
 
-        // --- RECEIPT PREVIEW LOGIC ---
+        // --- IFRAME PRINT LOGIC (INSTANT LOAD) ---
+        window.printViaIframe = function() {
+            const frame = document.getElementById('printFrame');
+            const receiptContent = document.getElementById('receipt-content').innerHTML;
+            const doc = frame.contentWindow.document;
+            
+            doc.open();
+            doc.write(`
+                <html><head><title>Receipt</title>
+                <style>
+                    body { font-family: sans-serif; padding: 20px; color: black; }
+                    .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid black; padding-bottom: 20px; margin-bottom: 20px; }
+                    .print-logo { height: 50px; }
+                    .print-title { font-size: 24px; font-weight: bold; text-transform: uppercase; }
+                    .print-meta { margin-bottom: 20px; line-height: 1.6; font-size: 14px; }
+                    .print-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 30px; }
+                    .print-table th { text-align: left; border-bottom: 1px solid black; padding: 8px; font-weight: bold; text-transform: uppercase; }
+                    .print-table td { border-bottom: 1px solid #ccc; padding: 8px; }
+                    .print-footer { margin-top: 60px; display: flex; justify-content: space-between; }
+                    .sig-line { width: 40%; border-top: 1px solid black; padding-top: 10px; font-size: 12px; text-align: center; }
+                    .legal-text { margin-top: 40px; font-size: 10px; color: #555; text-align: center; }
+                </style>
+                </head><body>${receiptContent}</body></html>
+            `);
+            doc.close();
+            
+            // Wait for image to load in iframe then print
+            setTimeout(() => {
+                frame.contentWindow.focus();
+                frame.contentWindow.print();
+            }, 500);
+        }
+
+        // --- RECEIPT PREVIEW ---
         window.generateReceiptPreview = function() {
+            // Unload inventory to clear memory for printing
+            document.getElementById('inventory-list').innerHTML = '';
+            
             const client = document.getElementById('clientName').value || "Client";
             const date = document.getElementById('returnDate').value || "TBD";
             const tbody = document.getElementById('print-tbody');
@@ -382,6 +409,19 @@
         window.closeReceiptPreview = function() {
             switchTab('view-checkout', document.querySelectorAll('.nav-item')[1]);
             document.querySelector('.bottom-nav').style.display = 'flex';
+            // Re-render inventory
+            renderList();
+        }
+
+        window.clearSelection = () => {
+            if(Object.keys(window.cart).length === 0) return;
+            if(!confirm("Clear all selected items?")) return;
+            window.cart = {}; saveCartLocally(); updateCartBadge(); updateClearButton(); renderList();
+        }
+        
+        function updateClearButton() {
+            const hasItems = Object.keys(window.cart).length > 0;
+            document.getElementById('deselectBtn').style.display = hasItems ? 'block' : 'none';
         }
 
         window.renderList = function() {
@@ -390,42 +430,10 @@
             const query = document.getElementById('searchBox').value.toLowerCase();
             const filteredItems = window.appData.filter(item => {
                 const matchesSearch = (item.desc || "").toLowerCase().includes(query) || (item.category || "").toLowerCase().includes(query);
-                
-                // FILTER LOGIC
-                let matchesType = false;
-                if(window.currentTypeFilter === 'ALL') matchesType = true;
-                else {
-                    // Normalize the item type from Cloud
-                    let itemType = (item.type || "").toUpperCase(); 
-                    if(window.currentTypeFilter === 'CAMERAS' && itemType === 'CAMERA') matchesType = true;
-                    else if(window.currentTypeFilter === 'GRIP' && itemType === 'GRIP') matchesType = true;
-                    else if(window.currentTypeFilter === itemType) matchesType = true;
-                }
-                
-                return matchesSearch; 
+                const matchesType = window.currentTypeFilter === 'ALL' || (item.type || "").toUpperCase() === window.currentTypeFilter;
+                return matchesSearch && matchesType;
             });
-
-            // Since we need to support the new tabs but the DB only has "Camera" and "Grip" tags:
-            // We do a "Smart Filter" based on keywords in the description
-            const finalFiltered = filteredItems.filter(item => {
-                if (window.currentTypeFilter === 'ALL') return true;
-                
-                const txt = (item.category + " " + item.desc).toUpperCase();
-                
-                if (window.currentTypeFilter === 'CAMERAS') return (item.type === 'Camera' && !txt.includes('LENS') && !txt.includes('FILTER') && !txt.includes('MONITOR') && !txt.includes('BATTERY'));
-                if (window.currentTypeFilter === 'LENSES') return txt.includes('LENS');
-                if (window.currentTypeFilter === 'MONITORS') return txt.includes('MONITOR');
-                if (window.currentTypeFilter === 'BATTERIES') return txt.includes('BATTERY') || txt.includes('CHARGER');
-                if (window.currentTypeFilter === 'FILTERS') return txt.includes('FILTER') || txt.includes('ND') || txt.includes('POLA');
-                if (window.currentTypeFilter === 'TRIPODS') return txt.includes('TRIPOD') || txt.includes('HEAD');
-                if (window.currentTypeFilter === 'GRIP') return item.type === 'Grip';
-                if (window.currentTypeFilter === 'AUDIO') return item.type === 'Audio';
-                if (window.currentTypeFilter === 'LIGHTING') return item.type === 'Lighting';
-                
-                return false;
-            });
-
-            finalFiltered.forEach(item => {
+            filteredItems.forEach(item => {
                 const id = item.id; const isSelected = window.cart.hasOwnProperty(id); const isRented = item.status === "OUT";
                 const el = document.createElement('div'); el.className = `inventory-item ${isSelected ? 'selected' : ''} ${isRented ? 'rented' : ''}`;
                 let imageHTML = `<div class="item-thumb">📷</div>`; if(item.image) { imageHTML = `<div class="item-thumb"><img src="${item.image}"></div>`; }

@@ -9,12 +9,10 @@
     <link rel="apple-touch-icon" href="logo.png">
     
     <style>
-        /* --- DARK MODE THEME --- */
-        :root { --primary: #64D2FF; --bg: #000000; --card: #1C1C1E; --text: #FFFFFF; --gray: #AEAEB2; --border: #2C2C2E; --input-bg: #2C2C2E; --danger: #FF453A; --success: #32D74B; }
+        /* --- THEME --- */
+        :root { --primary: #64D2FF; --bg: #000000; --card: #1C1C1E; --text: #FFFFFF; --gray: #AEAEB2; --border: #2C2C2E; --input-bg: #2C2C2E; --danger: #FF453A; --success: #32D74B; --share: #0A84FF; }
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; padding-bottom: 90px; -webkit-tap-highlight-color: transparent; }
-        
-        /* VIEWS */
-        .view { display: none; padding-bottom: 40px; }
+        .view { display: none; }
         .view.active { display: block; }
 
         /* HEADER */
@@ -73,25 +71,21 @@
         .signature-box { height:100px; border:2px dashed var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--gray); font-weight:bold; background: var(--bg); }
         .remove-btn { color: var(--danger); font-size: 20px; font-weight: bold; cursor: pointer; padding: 5px 10px; margin-right: -10px; }
         
-        .action-buttons { display: flex; gap: 10px; margin-top: 20px; flex-direction: column; }
+        .action-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .button-row { display: flex; gap: 10px; }
+
         .form-input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 8px; margin-bottom: 5px; box-sizing: border-box; }
+        
         .btn-primary { background: var(--primary); color: var(--bg); border: none; padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; }
-        .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; }
+        .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; }
+        /* NEW SHARE BUTTON */
+        .btn-share { background: var(--share); color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; }
         .btn-new-order { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; margin-top: 10px; display: none; }
 
-        /* === RECEIPT PREVIEW VIEW (The White Paper Screen) === */
+        /* RECEIPT VIEW */
         #view-receipt { background: #555; min-height: 100vh; padding: 20px; display: none; }
         #view-receipt.active { display: block; }
-        
-        .paper-sheet {
-            background: white;
-            color: black;
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 40px;
-            border-radius: 4px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        .paper-sheet { background: white; color: black; max-width: 700px; margin: 0 auto; padding: 40px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid black; padding-bottom: 20px; margin-bottom: 20px; }
         .print-logo { height: 50px; }
         .print-title { font-size: 24px; font-weight: bold; text-transform: uppercase; }
@@ -102,30 +96,29 @@
         .print-footer { margin-top: 60px; display: flex; justify-content: space-between; }
         .sig-line { width: 40%; border-top: 1px solid black; padding-top: 10px; font-size: 12px; text-align: center; }
         .legal-text { margin-top: 40px; font-size: 10px; color: #555; text-align: center; }
-
-        .receipt-actions { 
-            max-width: 700px; margin: 20px auto; display: flex; gap: 10px; 
-        }
-        /* Hide Receipt actions when actually printing */
-        @media print {
-            .receipt-actions, .app-header, .bottom-nav { display: none !important; }
-            #view-receipt { background: white; padding: 0; position: absolute; top: 0; left: 0; width: 100%; }
-            .paper-sheet { box-shadow: none; padding: 0; width: 100%; max-width: 100%; }
-        }
+        .receipt-actions { max-width: 700px; margin: 20px auto; display: flex; gap: 10px; }
 
         /* MODALS & NAV */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal-content { background: var(--card); width: 90%; max-width: 400px; padding: 25px; border-radius: 16px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border); color: var(--text); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .form-label { display: block; font-size: 12px; font-weight: bold; color: var(--gray); margin-bottom: 5px; margin-top: 10px; }
         .image-preview-box { width: 100%; height: 150px; background: var(--bg); border: 2px dashed var(--border); border-radius: 8px; margin-top: 5px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; cursor: pointer; }
         .image-preview-box img { width: 100%; height: 100%; object-fit: contain; display: none; }
         .image-preview-text { color: var(--gray); font-size: 14px; font-weight: 500; pointer-events: none; }
-
+        .fab { position: fixed; bottom: 100px; right: 20px; width: 56px; height: 56px; background: var(--primary); border-radius: 50%; color: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 12px rgba(100, 210, 255, 0.4); cursor: pointer; z-index: 150; }
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(28, 28, 30, 0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 25px 0; z-index: 200; }
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--gray); font-size: 10px; font-weight: 500; cursor: pointer; width: 60px; }
         .nav-item.active { color: var(--primary); }
         .nav-icon { font-size: 24px; margin-bottom: 2px; }
         .cart-count { position: absolute; top: 5px; right: 25%; background: var(--primary); color: var(--bg); font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; display: none; }
+
+        /* === PRINT STYLES === */
+        @media print {
+            .receipt-actions, .app-header, .bottom-nav { display: none !important; }
+            #view-receipt { background: white; padding: 0; position: absolute; top: 0; left: 0; width: 100%; }
+            .paper-sheet { box-shadow: none; padding: 0; width: 100%; max-width: 100%; border-radius: 0; }
+        }
     </style>
 </head>
 <body>
@@ -138,6 +131,7 @@
             </div>
             <button id="authBtn" class="auth-btn" onclick="openLoginModal()">Log In</button>
         </div>
+        
         <div id="top-controls">
             <div class="segment-control">
                 <button class="segment-btn active" onclick="filterType('ALL', this)">All</button>
@@ -166,11 +160,15 @@
         </div>
         <div class="checkout-section">
             <input type="text" id="clientName" class="form-input" placeholder="Client Name">
-            <input type="email" id="clientEmail" class="form-input" placeholder="Client Email">
+            <input type="email" id="clientEmail" class="form-input" placeholder="Client Email (for receipt)">
             <input type="date" id="returnDate" class="form-input">
+            
             <div class="signature-box">Sign Here</div>
             <div class="action-buttons">
-                <button class="btn-secondary" onclick="generateReceiptPreview()">📄 Generate Receipt</button>
+                <div class="button-row">
+                    <button class="btn-secondary" onclick="generateReceiptPreview()">📄 View Receipt</button>
+                    <button class="btn-share" onclick="shareManifest()">📤 Share WhatsApp</button>
+                </div>
                 <button id="checkoutBtn" class="btn-primary" onclick="handleCheckout()">Done (Mark Rented)</button>
             </div>
             <button id="newOrderBtn" class="btn-new-order" onclick="startNewOrder()">Start New Rental ↻</button>
@@ -179,8 +177,8 @@
 
     <div id="view-receipt" class="view">
         <div class="receipt-actions">
-            <button class="btn-secondary" onclick="closeReceiptPreview()">← Edit / Back</button>
-            <button class="btn-primary" onclick="window.print()">🖨 Print / Share PDF</button>
+            <button class="btn-secondary" onclick="closeReceiptPreview()">← Back</button>
+            <button class="btn-primary" onclick="window.print()">🖨 Print / Save PDF</button>
         </div>
         <div class="paper-sheet">
             <div class="print-header">
@@ -306,6 +304,31 @@
             document.querySelector('.nav-item').click();
         }
 
+        // --- NEW NATIVE SHARE ---
+        window.shareManifest = () => {
+            const client = document.getElementById('clientName').value || "Client";
+            const date = document.getElementById('returnDate').value || "TBD";
+            let text = `RENTAL MANIFEST\nClient: ${client}\nReturn: ${date}\n\n`;
+            const cartIds = Object.keys(window.cart);
+            if(cartIds.length === 0) { alert("Cart is empty"); return; }
+            cartIds.forEach(id => {
+                const item = window.appData.find(i => i.id === id);
+                const data = window.cart[id];
+                text += `[x${data.qty}] ${item.category} ${item.desc} (${item.sn})\n`;
+                if(data.notes) text += `   Note: ${data.notes}\n`;
+            });
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: `Rental - ${client}`,
+                    text: text,
+                }).catch(console.error);
+            } else {
+                // Fallback for desktops that don't support share
+                navigator.clipboard.writeText(text).then(() => alert("Receipt copied to clipboard!"));
+            }
+        }
+
         // --- RECEIPT PREVIEW LOGIC ---
         window.generateReceiptPreview = function() {
             const client = document.getElementById('clientName').value || "Client";
@@ -316,7 +339,6 @@
             const cartIds = Object.keys(window.cart);
             if(cartIds.length === 0) { alert("Cart is empty"); return; }
             
-            // Populate the white paper receipt
             meta.innerHTML = `Client: <b>${client}</b><br>Return Date: <b>${date}</b><br>Date Issued: ${new Date().toLocaleDateString()}`;
             tbody.innerHTML = '';
             
@@ -326,14 +348,11 @@
                 tbody.innerHTML += `<tr><td style="text-align:center;">${data.qty}</td><td><b>${item.category}</b> ${item.desc}</td><td>${item.sn}</td><td>${data.notes || '-'}</td></tr>`;
             });
             
-            // Switch to Receipt View
-            switchTab('view-receipt', document.querySelector('.nav-item')); // Hide other tabs
-            // Hide Bottom Nav specifically for this view (handled in CSS)
+            switchTab('view-receipt', document.querySelector('.nav-item')); 
             document.querySelector('.bottom-nav').style.display = 'none';
         }
 
         window.closeReceiptPreview = function() {
-            // Switch back to Checkout
             switchTab('view-checkout', document.querySelectorAll('.nav-item')[1]);
             document.querySelector('.bottom-nav').style.display = 'flex';
         }
@@ -380,13 +399,8 @@
         window.switchTab = (viewId, navItem) => { 
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); 
             document.getElementById(viewId).classList.add('active'); 
-            // Only update nav if it's one of the main views, not receipt view
-            if(navItem) {
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); 
-                navItem.classList.add('active'); 
-            }
+            if(navItem) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); navItem.classList.add('active'); }
             const controls = document.getElementById('top-controls'); 
-            // Hide top controls for checkout OR receipt view
             if(viewId === 'view-checkout' || viewId === 'view-receipt') { controls.style.display = 'none'; } else { controls.style.display = 'block'; }
             if(viewId === 'view-checkout') renderManifest(); 
         };

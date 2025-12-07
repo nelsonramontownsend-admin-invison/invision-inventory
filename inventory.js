@@ -1,4 +1,3 @@
-// SAFE INVENTORY FILE
 var inventory = [
   // CAMERAS
   { type: "CAMERAS", category: "ARRI", desc: "ALEXA 35 extreme w/Case W/full Accessories", sn: "K1.0053455–70413", qty: "1", status: "OK" },
@@ -14,6 +13,8 @@ var inventory = [
   { type: "CAMERAS", category: "CODEX MEDIA", desc: "CODEX CARD READER (USB-C)", sn: "1056305", qty: "1", status: "OK" },
   { type: "CAMERAS", category: "CODEX MEDIA", desc: "CODEX CARD READER (USB-C) (2)", sn: "1076722", qty: "1", status: "OK" },
   { type: "CAMERAS", category: "CODEX MEDIA", desc: "CODEX CARD READER (DC POWER) (2)", sn: "1075972", qty: "1", status: "OK" },
+  { type: "CAMERAS", category: "TERADEK", desc: "Transmitter/receiver", sn: "226400353", qty: "1", status: "OK" },
+  { type: "CAMERAS", category: "TERADEK", desc: "Transmitter/receiver (2)", sn: "226400546", qty: "1", status: "OK" },
 
   // MONITORS
   { type: "MONITORS", category: "ATOMOS", desc: "19 inch Directors monitor sumo 4K 60", sn: "K1 094SUM50D28", qty: "1", status: "OK" },
@@ -73,7 +74,7 @@ var inventory = [
   { type: "FILTERS", category: "TIFFEN", desc: "WTR/WHT ND .6", sn: "302563", qty: "1", status: "OK" },
   { type: "FILTERS", category: "TIFFEN", desc: "WTR/WHT ND .9", sn: "303436", qty: "1", status: "OK" },
   { type: "FILTERS", category: "TIFFEN", desc: "GLIMMER GLASS TM 1", sn: "53329", qty: "1", status: "OK" },
-  { type: "FILTERS", category: "TIFFEN", desc: "BLACK PRO-MIST 1/2", sn: "70921", qty: "1", status: "OK" },
+  { type: "FILTERS", category: "TIFFEN", desc: "BLACK PRO-MIST 1/2", sn: "70921", qty: "1", "status": "OK" },
   { type: "FILTERS", category: "TIFFEN", desc: "BLACK PRO-MIST 1/4", sn: "52949", qty: "1", "status": "OK" },
   { type: "FILTERS", category: "TIFFEN", desc: "CLEAR/ND.9 SOFT HOR", sn: "88674", qty: "1", "status": "OK" },
   { type: "FILTERS", category: "TIFFEN", desc: "WTR/WHT CLEAR/N.9 SOFT HOR", sn: "82558", qty: "1", "status": "OK" },
@@ -90,7 +91,10 @@ var inventory = [
   { type: "FILTERS", category: "LINDSEY", desc: "CLOSE-UP DIOPTER +2", sn: "A11936-D", qty: "1", "status": "OK" },
   { type: "FILTERS", category: "LINDSEY", desc: "CLOSE-UP DIOPTER +3", sn: "A9722", qty: "1", "status": "OK" },
   { type: "FILTERS", category: "TILTA", desc: "Matt Box 6 x 6 W/full accessories", sn: "N/A", qty: "2", "status": "OK" },
+  { type: "FILTERS", category: "TILTA", desc: "Matt Box 4,5,6 W/full accessories", sn: "N/A", qty: "2", "status": "OK" },
   { type: "FILTERS", category: "BRIGHT Tangerine", desc: "Matt Box 4,5,6 W/full accessories", sn: "NA", qty: "1", "status": "OK" },
+  { type: "FILTERS", category: "BRIGHT Tangerine", desc: "Matt box 6 x 6 W/full access accessories", sn: "NA", qty: "1", "status": "OK" },
+  { type: "FILTERS", category: "BRIGHT Tangerine", desc: "MATT BOX CARBON FIBER 6 x 6", sn: "B1245.0103", qty: "1", "status": "OK" },
 
   // TRIPODS
   { type: "TRIPODS", category: "Cartoni", desc: "Tripod legs 10 mm bowl W/ Focus 18 head", sn: "FG1108", qty: "1", "status": "OK" },
@@ -176,15 +180,29 @@ var inventory = [
   { type: "GRIP", category: "GENERIC", desc: "VEHICLE", sn: "N/A", qty: "1", "status": "OK" },
   { type: "GRIP", category: "GENERIC", desc: "GENERATOR", sn: "N/A", qty: "1", "status": "OK" },
   { type: "GRIP", category: "ROBO CUP", desc: "CLAMP CUP HOLDER", sn: "N/A", qty: "2", "status": "OK" },
-  { type: "GRIP", category: "LOUD SPEAKER", desc: "12” PROFESSIONAL LOUD SPEAKER (CTA)", sn: "LSA – 12DSP", qty: "1", "status": "OK" },
+  { type: "GRIP", category: "LOUD SPEAKER", desc: "12” PROFESSIONAL SPEAKER", sn: "LSA – 12DSP", qty: "1", "status": "OK" },
 
   // AUDIO
   { type: "AUDIO", category: "BOYA", desc: "Directors mic w/ transmitter", sn: "4287", qty: "1", "status": "OK" },
   { type: "AUDIO", category: "DEITY", desc: "THEOS DIGITAL UHF WIRELESS KIT", sn: "7DDDBL1020B9", qty: "1", "status": "OK" },
+  { type: "AUDIO", category: "DEITY", desc: "THEOS DIGITAL UHF WIRELESS KIT (2)", sn: "7DCDBL20205D", qty: "1", "status": "OK" },
   { type: "AUDIO", category: "DEITY", desc: "TC-1 WIRELESS MICROPHONES KIT", sn: "6NR00088927", qty: "1", "status": "OK" },
+  { type: "AUDIO", category: "DEITY", desc: "TC-1 WIRELESS MICROPHONES KIT (2)", sn: "6NR00062322", qty: "1", "status": "OK" },
   { type: "AUDIO", category: "DEITY", desc: "D4 DUO V-MICROPHONES", sn: "43900018318", qty: "1", "status": "OK" },
+  { type: "AUDIO", category: "DEITY", desc: "D4 DUO V-MICROPHONES (2)", sn: "43900018338", qty: "1", "status": "OK" },
   { type: "AUDIO", category: "DEITY", desc: "SLATE TC-1", sn: "6PQ00061806", qty: "1", "status": "OK" },
   { type: "AUDIO", category: "DEITY", desc: "PR-2 STEREO RECORDER", sn: "7CJ00077881", qty: "1", "status": "OK" },
+  { type: "AUDIO", category: "DEITY", desc: "PR-2 STEREO RECORDER (2)", sn: "7CJ00077890", qty: "1", "status": "OK" },
+  { type: "AUDIO", category: "DEITY", desc: "PR-2 STEREO RECORDER (3)", sn: "7CJ00077895", qty: "1", "status": "OK" },
+  { type: "AUDIO", category: "DEITY", desc: "PR-2 STEREO RECORDER (4)", sn: "7CJ00077884", qty: "1", "status": "OK" },
+  { type: "AUDIO", category: "DEITY", desc: "PR-2 STEREO RECORDER (5)", sn: "7CJ00077892", qty: "1", "status": "OK" },
+  { type: "AUDIO", category: "DEITY", desc: "W.LAV PRO/DA35", sn: "N/A", qty: "1", "status": "OK" },
+  { type: "AUDIO", category: "DEITY", desc: "VO-7U", sn: "52500021669", qty: "1", "status": "OK" },
+  { type: "AUDIO", category: "DEITY", desc: "ASM1", sn: "N/A", qty: "1", "status": "OK" },
+  { type: "AUDIO", category: "DEITY", desc: "SPD-1", sn: "N/A", qty: "1", "status": "OK" },
+  { type: "AUDIO", category: "DEITY", desc: "C15/ LOCKING 3.5mm CLAMP", sn: "N/A", qty: "1", "status": "OK" },
+  { type: "AUDIO", category: "DEITY", desc: "DA35S MICRO DOT ADAPTER", sn: "N/A", qty: "1", "status": "OK" },
+  { type: "AUDIO", category: "DEITY", desc: "W.LAV PRO 3.5mm", sn: "N/A", qty: "1", "status": "OK" },
   { type: "AUDIO", category: "ZOOM", desc: "H6 AUDIO RECORDER HANDY RECORDER", sn: "91523425", qty: "1", "status": "OK" },
   { type: "AUDIO", category: "ZOOM", desc: "F6 MULTI-TRACK FIELD RECORDER", sn: "007077", qty: "1", "status": "OK" },
   { type: "AUDIO", category: "SENNHEISER", desc: "MKH 416 P48 W/accessories", sn: "230382", qty: "1", "status": "OK" },
@@ -198,7 +216,7 @@ var inventory = [
   { type: "CAMERAS", category: "ARRI", desc: "Proprietary Alan key red handle", sn: "SW3X75", qty: "1", status: "OK" },
   { type: "CAMERAS", category: "HI-5", desc: "SX Hi-5 hand unit, 2 batt, charger", sn: "k2.0073280–63084", qty: "1", status: "OK" },
   { type: "CAMERAS", category: "HI-5", desc: "Hi-5 hand unit, 2 batt, charger", sn: "k2.0037280–61715", qty: "1", status: "OK" },
-  { type: "CAMERAS", category: "C-MOTION", desc: "CINIEFADE VARI360 kit w/ limo control", sn: "K2.0019848–8023", qty: "1", status: "OK" },
+  { type: "CAMERAS", category: "C-MOTION", desc: "CINIEFADE VARI360 kit w/ limo control", sn: "K2.0019848–8023", qty: "1", "status": "OK" },
   { type: "CAMERAS", category: "HOLLYLAND", desc: "SOLIDCOM C1 Pro W/case", sn: "45HX4423KUT", qty: "11", status: "OK" },
   { type: "CAMERAS", category: "TILTA", desc: "Manual focus W/bridge brace", sn: "NA", qty: "2", status: "OK" }
 ];

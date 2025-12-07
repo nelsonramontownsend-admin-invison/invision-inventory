@@ -21,7 +21,8 @@
         .logo-container { flex: 1; display: flex; align-items: center; justify-content: flex-start; overflow: hidden; } 
         .company-logo { max-height: 40px; max-width: 60px; object-fit: contain; margin-right: 10px; }
         .brand-name { font-family: 'Arial Black', sans-serif; font-size: 18px; font-weight: 900; color: black; -webkit-text-stroke: 1px var(--primary); letter-spacing: -0.5px; white-space: nowrap; }
-        
+        .admin-lock { font-size: 24px; cursor: pointer; padding: 10px; color: var(--gray); flex-shrink: 0; margin-left: 15px; background: rgba(255,255,255,0.05); border-radius: 50%; } 
+        .admin-lock.unlocked { color: var(--primary); }
         .auth-btn { font-size: 14px; font-weight: 600; cursor: pointer; padding: 8px 16px; color: var(--primary); border: 1px solid var(--primary); border-radius: 20px; background: rgba(100, 210, 255, 0.1); transition: all 0.2s; }
         .auth-btn.logged-in { border-color: var(--danger); color: var(--danger); background: rgba(255, 69, 58, 0.1); }
 
@@ -32,7 +33,6 @@
         .segment-control { display: inline-flex; background: var(--input-bg); border-radius: 9px; padding: 2px; }
         .segment-btn { border: none; background: none; padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--gray); border-radius: 7px; cursor: pointer; margin-right: 2px; }
         .segment-btn.active { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-        
         .search-wrapper { position: relative; width: 100%; display: flex; gap: 10px; }
         .search-input { width: 100%; padding: 10px 35px 10px 15px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 16px; box-sizing: border-box; outline: none; }
         .search-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--gray); font-size: 16px; background: rgba(255,255,255,0.1); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; display: none; }
@@ -79,10 +79,10 @@
         .form-input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 8px; margin-bottom: 5px; box-sizing: border-box; }
         .btn-primary { background: var(--primary); color: var(--bg); border: none; padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 2; white-space: nowrap; }
         .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
-        .btn-new-order { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; margin-top: 10px; display: none; }
         .btn-danger { background: var(--warning); color: black; border: none; padding: 10px; margin-top: 10px; width: 100%; font-weight: bold; border-radius: 8px; cursor: pointer; }
+        .btn-new-order { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; margin-top: 10px; display: none; }
 
-        /* RECEIPT VIEW */
+        /* RECEIPT VIEW (PAGE SWAP) */
         #view-receipt { background: #555; min-height: 100vh; padding: 20px; display: none; }
         #view-receipt.active { display: block; }
         .paper-sheet { background: white; color: black; max-width: 700px; margin: 0 auto; padding: 40px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -134,7 +134,12 @@
             </div>
             <button id="authBtn" class="auth-btn" onclick="openLoginModal()">Log In</button>
         </div>
-
+        
+        <div id="admin-controls-panel" class="admin-only" style="padding:10px; background:var(--input-bg); border-radius:8px; margin-bottom:10px;">
+            <div style="font-size:12px; font-weight:bold; color:var(--gray); margin-bottom:5px;">ADMIN PANEL</div>
+            <button class="btn-danger" onclick="uploadLocalDataToCloud()">⚠️ Update Cloud Database</button>
+        </div>
+        
         <div id="top-controls">
             <div class="tab-scroller">
                 <div class="segment-control">
@@ -233,10 +238,7 @@
             <label class="form-label">Item Name</label><input type="text" id="itemDesc" class="form-input" placeholder="Description">
             <label class="form-label">Serial Number</label><input type="text" id="itemSerial" class="form-input" placeholder="Serial #">
             <label class="form-label">Quantity</label><input type="number" id="itemQty" class="form-input" placeholder="Qty" value="1">
-            <div class="modal-buttons">
-                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
-                <button class="btn-primary" onclick="saveItem()">Save</button>
-            </div>
+            <div class="modal-buttons"><button class="btn-secondary" onclick="closeModal()">Cancel</button><button class="btn-primary" onclick="saveItem()">Save</button></div>
         </div>
     </div>
 
@@ -381,7 +383,7 @@
             
             try { 
                 await batch.commit(); 
-                alert("Success! Items marked OUT."); 
+                alert("Success! Items marked OUT.\n\nYou can now Print the receipt."); 
                 window.isCheckoutComplete = true; 
                 document.getElementById('checkoutBtn').style.display = 'none'; 
                 document.getElementById('newOrderBtn').style.display = 'block'; 
@@ -444,7 +446,7 @@
             const filteredItems = window.appData.filter(item => {
                 const matchesSearch = (item.desc || "").toLowerCase().includes(query) || (item.category || "").toLowerCase().includes(query);
                 
-                // FILTER LOGIC - UPDATED
+                // FILTER LOGIC
                 let matchesType = false;
                 if(window.currentTypeFilter === 'ALL') matchesType = true;
                 else {
@@ -458,7 +460,7 @@
                 return matchesSearch && matchesType;
             });
 
-            // Smart Text Filtering Logic
+            // Smart Text Filtering Logic (Fallback if DB tag is generic)
             const finalFiltered = filteredItems.filter(item => {
                 if (window.currentTypeFilter === 'ALL') return true;
                 const txt = (item.category + " " + item.desc).toUpperCase();

@@ -26,6 +26,7 @@ var inventory = [
   { type: "CAMERAS", category: "TILTA", desc: "Manual focus W/bridge brace", sn: "NA", qty: "2", status: "OK" },
   { type: "CAMERAS", category: "TILTA", desc: "Utility Allen key set", sn: "N/A", qty: "1", status: "OK" },
   { type: "CAMERAS", category: "ARRI", desc: "Proprietary Alan key red handle", sn: "SW3X75", qty: "1", status: "OK" },
+  { type: "CAMERAS", category: "HOLLYLAND", desc: "SOLIDCOM C1 Pro W/case", sn: "45HX4423KUT", qty: "11", status: "OK" },
 
   // --- MONITORS ---
   { type: "MONITORS", category: "ATOMOS", desc: "19 inch Directors monitor sumo 4K 60", sn: "K1 094SUM50D28", qty: "1", status: "OK" },
@@ -50,7 +51,7 @@ var inventory = [
   { type: "BATTERIES", category: "BLUESHAPE", desc: "B-MOUNT BATTERY 290 GRANITE (2)", sn: "0031251–28", qty: "1", status: "OK" },
   { type: "BATTERIES", category: "BLUESHAPE", desc: "B-MOUNT BATTERY 290 GRANITE (3)", sn: "0076151–56", qty: "1", status: "OK" },
   { type: "BATTERIES", category: "BLUESHAPE", desc: "B-MOUNT BATTERY 290 GRANITE (4)", sn: "0076251–5F", qty: "1", status: "OK" },
-  { type: "BATTERIES", category: "DJI", desc: "BATTERY STATION - TB50 / SUITCASE", sn: "IN2BS", qty: "1", status: "OK" },
+  { type: "BATTERIES", category: "DJI", desc: "BATTERY STATION - TB50", sn: "IN2BS", qty: "1", status: "OK" },
   { type: "BATTERIES", category: "SMALLHD", desc: "24” DC/ V-MOUNT BATTERY RACK", sn: "24DS240850007", qty: "1", status: "OK" },
   { type: "BATTERIES", category: "SMALLHD", desc: "24” DC/ V-MOUNT BATTERY RACK (2)", sn: "24DS251180009", qty: "1", status: "OK" },
   { type: "BATTERIES", category: "GENERIC", desc: "BATTERY", sn: "N/A", qty: "1", status: "OK" },
@@ -172,7 +173,6 @@ var inventory = [
   { type: "GRIP", category: "SMALLHD", desc: "Ultra 7 sunshade W/rods", sn: "NA", qty: "1", "status": "OK" },
   { type: "GRIP", category: "SDI cable", desc: "SDI cable", sn: "NA", qty: "3", "status": "OK" },
   { type: "GRIP", category: "LIMO cable", desc: "LIMO cable", sn: "NA", qty: "2", "status": "OK" },
-  { type: "GRIP", category: "HOLLYLAND", desc: "SOLIDCOM C1 Pro W/case", sn: "45HX4423KUT", qty: "11", "status": "OK" },
 
   // --- AUDIO ---
   { type: "AUDIO", category: "BOYA", desc: "Directors mic w/ transmitter", sn: "4287", qty: "1", "status": "OK" },

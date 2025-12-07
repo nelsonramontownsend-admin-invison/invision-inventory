@@ -12,6 +12,8 @@
         /* --- THEME --- */
         :root { --primary: #64D2FF; --bg: #000000; --card: #1C1C1E; --text: #FFFFFF; --gray: #AEAEB2; --border: #2C2C2E; --input-bg: #2C2C2E; --danger: #FF453A; --success: #32D74B; }
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; padding-bottom: 90px; -webkit-tap-highlight-color: transparent; }
+        
+        /* VIEWS */
         .view { display: none; }
         .view.active { display: block; }
 
@@ -20,7 +22,10 @@
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; width: 100%; min-height: 45px; }
         .logo-container { flex: 1; display: flex; align-items: center; justify-content: flex-start; overflow: hidden; } 
         .company-logo { max-height: 40px; max-width: 60px; object-fit: contain; margin-right: 10px; }
+        
+        /* BRAND NAME - Fixed Case */
         .brand-name { font-family: 'Arial Black', sans-serif; font-size: 18px; font-weight: 900; color: black; -webkit-text-stroke: 1px var(--primary); letter-spacing: -0.5px; white-space: nowrap; }
+        
         .admin-lock { font-size: 24px; cursor: pointer; padding: 10px; color: var(--gray); flex-shrink: 0; margin-left: 15px; background: rgba(255,255,255,0.05); border-radius: 50%; } 
         .admin-lock.unlocked { color: var(--primary); }
         .auth-btn { font-size: 14px; font-weight: 600; cursor: pointer; padding: 8px 16px; color: var(--primary); border: 1px solid var(--primary); border-radius: 20px; background: rgba(100, 210, 255, 0.1); transition: all 0.2s; }
@@ -30,11 +35,9 @@
         #top-controls { display: block; overflow: hidden; transition: max-height 0.3s ease; }
         .tab-scroller { overflow-x: auto; white-space: nowrap; padding-bottom: 10px; margin-bottom: 5px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .tab-scroller::-webkit-scrollbar { display: none; }
-        
         .segment-control { display: inline-flex; background: var(--input-bg); border-radius: 9px; padding: 2px; }
         .segment-btn { border: none; background: none; padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--gray); border-radius: 7px; cursor: pointer; margin-right: 2px; }
         .segment-btn.active { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-        
         .search-wrapper { position: relative; width: 100%; display: flex; gap: 10px; }
         .search-input { width: 100%; padding: 10px 35px 10px 15px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 16px; box-sizing: border-box; outline: none; }
         .search-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--gray); font-size: 16px; background: rgba(255,255,255,0.1); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; display: none; }
@@ -85,7 +88,7 @@
         .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
         .btn-new-order { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; margin-top: 10px; display: none; }
 
-        /* RECEIPT VIEW */
+        /* RECEIPT VIEW (PAGE SWAP) */
         #view-receipt { background: #555; min-height: 100vh; padding: 20px; display: none; }
         #view-receipt.active { display: block; }
         .paper-sheet { background: white; color: black; max-width: 700px; margin: 0 auto; padding: 40px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -105,7 +108,6 @@
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal-content { background: var(--card); width: 90%; max-width: 400px; padding: 25px; border-radius: 16px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border); color: var(--text); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
-        .form-label { display: block; font-size: 12px; font-weight: bold; color: var(--gray); margin-bottom: 5px; margin-top: 10px; }
         .image-preview-box { width: 100%; height: 150px; background: var(--bg); border: 2px dashed var(--border); border-radius: 8px; margin-top: 5px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; cursor: pointer; }
         .image-preview-box img { width: 100%; height: 100%; object-fit: contain; display: none; }
         .image-preview-text { color: var(--gray); font-size: 14px; font-weight: 500; pointer-events: none; }
@@ -129,6 +131,263 @@
     </style>
 </head>
 <body>
+
+    <script>
+        // GLOBALS
+        window.appData = []; 
+        window.cart = {}; 
+        window.currentTypeFilter = 'ALL'; 
+        window.editingId = null; 
+        window.tempImageURL = ""; 
+        window.isAdmin = false; 
+        window.isCheckoutComplete = false;
+
+        // UI FUNCTIONS (Safe to call from HTML)
+        function filterType(type, btn) {
+            window.currentTypeFilter = type;
+            document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+            renderList();
+        }
+
+        function handleSearch() {
+            const val = document.getElementById('searchBox').value;
+            document.getElementById('clearBtn').style.display = val.length > 0 ? 'flex' : 'none';
+            renderList();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchBox').value = '';
+            handleSearch();
+        }
+        
+        function clearSelection() {
+            if(Object.keys(window.cart).length === 0) return;
+            if(!confirm("Clear all selected items?")) return;
+            window.cart = {}; 
+            saveCartLocally(); 
+            updateCartBadge(); 
+            updateClearButton(); 
+            renderList();
+        }
+        
+        function updateClearButton() {
+            const hasItems = Object.keys(window.cart).length > 0;
+            const btn = document.getElementById('deselectBtn');
+            if(btn) btn.style.display = hasItems ? 'block' : 'none';
+        }
+
+        function toggleSelection(id) {
+            if (window.cart.hasOwnProperty(id)) { delete window.cart[id]; } 
+            else { window.cart[id] = { qty: 1, notes: "" }; }
+            saveCartLocally(); 
+            renderList(); 
+            updateCartBadge();
+            updateClearButton();
+        }
+        
+        function updateCartBadge() {
+            const count = Object.keys(window.cart).length;
+            document.getElementById('cart-badge').innerText = count;
+            document.getElementById('cart-badge').style.display = count > 0 ? 'block' : 'none';
+        }
+
+        function adjustQty(id, change) {
+            if(!window.cart[id]) return;
+            const item = window.appData.find(i => i.id === id);
+            const maxQty = parseInt(item.qty) || 1;
+            let newQty = window.cart[id].qty + change;
+            if (newQty < 1) newQty = 1;
+            if (newQty > maxQty) newQty = maxQty;
+            window.cart[id].qty = newQty;
+            renderManifest();
+        }
+        
+        function removeFromCart(id) {
+            delete window.cart[id];
+            saveCartLocally();
+            updateCartBadge();
+            updateClearButton();
+            renderManifest();
+            renderList(); // To remove highlight
+        }
+        
+        function updateCartItem(id, field, value) {
+            if (window.cart[id]) window.cart[id][field] = value;
+            saveCartLocally();
+        }
+
+        function switchTab(viewId, navItem) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            
+            if(navItem) {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                navItem.classList.add('active');
+            }
+            
+            const controls = document.getElementById('top-controls');
+            if(viewId === 'view-checkout' || viewId === 'view-receipt') { 
+                controls.style.display = 'none'; 
+                renderManifest(); 
+            } else { 
+                controls.style.display = 'block'; 
+            }
+        }
+        
+        function openModal(id) {
+            const modal = document.getElementById('itemModal');
+            const title = document.getElementById('modalTitle');
+            const imgPrev = document.getElementById('imagePreview');
+            document.getElementById('fileInput').value = "";
+            imgPrev.src = ""; imgPrev.style.display = "none";
+            document.getElementById('previewText').style.display = "block";
+            window.tempImageURL = "";
+
+            if (id === null) {
+                window.editingId = null; title.innerText = "Add New Item";
+                // Reset form...
+            } else {
+                window.editingId = id;
+                const item = window.appData.find(i => i.id === id);
+                title.innerText = "Edit Item";
+                document.getElementById('itemType').value = item.type || "CAMERAS";
+                document.getElementById('itemCategory').value = item.category || "";
+                document.getElementById('itemDesc').value = item.desc || "";
+                document.getElementById('itemSerial').value = item.sn || "";
+                document.getElementById('itemQty').value = item.qty || 1;
+                if(item.image) {
+                    imgPrev.src = item.image; imgPrev.style.display = "block";
+                    document.getElementById('previewText').style.display = "none";
+                    window.tempImageURL = item.image;
+                }
+            }
+            modal.style.display = 'flex';
+        }
+        
+        function closeModal() { document.getElementById('itemModal').style.display = 'none'; }
+        function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
+        function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
+        
+        function handleImageUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                    document.getElementById('previewText').style.display = 'none';
+                    window.tempImageURL = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function saveCartLocally() {
+            try { localStorage.setItem('invision_cart', JSON.stringify(window.cart)); } catch(e) {}
+        }
+
+        // --- RECEIPT LOGIC ---
+        function generateReceiptPreview() {
+            const client = document.getElementById('clientName').value || "Client";
+            const date = document.getElementById('returnDate').value || "TBD";
+            const tbody = document.getElementById('print-tbody');
+            const meta = document.getElementById('print-meta');
+            
+            const cartIds = Object.keys(window.cart);
+            if(cartIds.length === 0) { alert("Cart is empty"); return; }
+            
+            meta.innerHTML = `Client: <b>${client}</b><br>Return Date: <b>${date}</b><br>Date Issued: ${new Date().toLocaleDateString()}`;
+            tbody.innerHTML = '';
+            
+            cartIds.forEach(id => {
+                const item = window.appData.find(i => i.id === id);
+                if(item) {
+                    const data = window.cart[id];
+                    tbody.innerHTML += `<tr><td style="text-align:center;">${data.qty}</td><td><b>${item.category}</b> ${item.desc}</td><td>${item.sn}</td><td>${data.notes || '-'}</td></tr>`;
+                }
+            });
+            
+            switchTab('view-receipt', document.querySelector('.nav-item')); 
+            document.querySelector('.bottom-nav').style.display = 'none';
+        }
+
+        function closeReceiptPreview() {
+            switchTab('view-checkout', document.querySelectorAll('.nav-item')[1]);
+            document.querySelector('.bottom-nav').style.display = 'flex';
+        }
+
+        // --- RENDER ---
+        function renderList() {
+            const listContainer = document.getElementById('inventory-list');
+            listContainer.innerHTML = '';
+            
+            // Fallback if data not loaded yet
+            if (!window.appData || window.appData.length === 0) {
+                 if(typeof window.inventory !== 'undefined') {
+                     // Use local inventory if Cloud isn't ready
+                     window.appData = window.inventory.map((item, idx) => ({ id: idx, ...item }));
+                 } else {
+                     listContainer.innerHTML = '<div style="padding:20px; text-align:center; color:var(--gray);">Loading...</div>'; 
+                     return; 
+                 }
+            }
+
+            const query = document.getElementById('searchBox').value.toLowerCase();
+            const filteredItems = window.appData.filter(item => {
+                const matchesSearch = (item.desc || "").toLowerCase().includes(query) || (item.category || "").toLowerCase().includes(query);
+                
+                let matchesType = false;
+                if(window.currentTypeFilter === 'ALL') matchesType = true;
+                else {
+                    let itemType = (item.type || "").toUpperCase(); 
+                    if(window.currentTypeFilter === itemType) matchesType = true;
+                }
+                return matchesSearch && matchesType;
+            });
+
+            filteredItems.forEach(item => {
+                const id = item.id; 
+                const isSelected = window.cart.hasOwnProperty(id); 
+                const isRented = item.status === "OUT";
+                const el = document.createElement('div'); 
+                el.className = `inventory-item ${isSelected ? 'selected' : ''} ${isRented ? 'rented' : ''}`;
+                
+                let imageHTML = `<div class="item-thumb">📷</div>`; 
+                if(item.image) { imageHTML = `<div class="item-thumb"><img src="${item.image}"></div>`; }
+                
+                let checkInBtn = isRented ? `<button class="checkin-btn" onclick="checkInItem('${id}', event)">Check In</button>` : "";
+                let statusBadge = isRented ? `<span class="qty-badge" style="background:var(--danger); color:white;">OUT</span>` : `<span class="qty-badge">Qty: ${item.qty}</span>`;
+
+                // NOTE: All onclicks reference global functions now
+                el.innerHTML = `
+                    <div class="check-circle" onclick="toggleSelection('${id}')"></div>
+                    ${imageHTML}
+                    <div class="item-content-clickable" onclick="toggleSelection('${id}')">
+                        <div class="item-category">${item.category}</div>
+                        <div class="item-name">${item.desc}</div>
+                        <div class="item-meta">${statusBadge} <span>SN: ${item.sn}</span></div>
+                    </div>
+                    ${checkInBtn}
+                    <div class="edit-btn admin-only" onclick="openModal('${id}')">✎</div>
+                `;
+                listContainer.appendChild(el);
+            });
+            
+            // Re-hide admin buttons if not logged in
+            if(!window.isAdmin) {
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+            } else {
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
+            }
+        }
+        
+        // Initial Cart Load
+        try {
+            const saved = localStorage.getItem('invision_cart');
+            if(saved) { window.cart = JSON.parse(saved); updateCartBadge(); updateClearButton(); }
+        } catch(e) {}
+        
+    </script>
 
     <div class="app-header">
         <div class="header-top">
@@ -244,10 +503,15 @@
     <div id="loginModal" class="modal">
         <div class="modal-content" style="max-width: 320px; text-align: center;">
             <h2 style="margin-top:0; margin-bottom:20px;">Staff Login</h2>
-            <input type="email" id="loginEmail" class="form-input" placeholder="Email Address">
-            <input type="password" id="loginPassword" class="form-input" placeholder="Password">
-            <div id="loginError" style="color:var(--danger); font-size:13px; margin-top:10px; display:none;"></div>
-            <div class="modal-buttons" style="flex-direction: column;"><button class="btn-primary" onclick="handleLogin()">Log In</button><button class="btn-secondary" onclick="closeLoginModal()">Cancel</button></div>
+            <form onsubmit="handleLogin(); return false;">
+                <input type="email" id="loginEmail" class="form-input" placeholder="Email Address" autocomplete="email">
+                <input type="password" id="loginPassword" class="form-input" placeholder="Password" autocomplete="current-password">
+                <div id="loginError" style="color:var(--danger); font-size:13px; margin-top:10px; display:none;"></div>
+                <div class="modal-buttons" style="flex-direction: column;">
+                    <button type="submit" class="btn-primary">Log In</button>
+                    <button type="button" class="btn-secondary" onclick="closeLoginModal()">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -276,43 +540,10 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-
-        window.appData = []; window.cart = {}; window.currentTypeFilter = 'ALL'; window.editingId = null; window.tempImageURL = ""; window.isAdmin = false; window.isCheckoutComplete = false;
-
-        function saveCartLocally() {
-            try { localStorage.setItem('invision_cart', JSON.stringify(window.cart)); } catch(e) {}
-        }
-        function loadCartLocally() {
-            try {
-                const saved = localStorage.getItem('invision_cart');
-                if(saved) { window.cart = JSON.parse(saved); updateCartBadge(); updateClearButton(); }
-            } catch(e) { window.cart = {}; }
-        }
-
-        onAuthStateChanged(auth, (user) => {
-            const btn = document.getElementById('authBtn');
-            if (user) { window.isAdmin = true; document.body.classList.add('admin-mode'); btn.innerText = "Log Out"; btn.classList.add('logged-in'); btn.onclick = handleLogout; } 
-            else { window.isAdmin = false; document.body.classList.remove('admin-mode'); btn.innerText = "Log In"; btn.classList.remove('logged-in'); btn.onclick = openLoginModal; }
-            renderList();
-        });
-
-        window.openLoginModal = () => { document.getElementById('loginModal').style.display = 'flex'; document.getElementById('loginError').style.display = 'none'; }
-        window.closeLoginModal = () => { document.getElementById('loginModal').style.display = 'none'; }
-        window.handleLogin = async () => {
-            const email = document.getElementById('loginEmail').value; const pass = document.getElementById('loginPassword').value;
-            try { await signInWithEmailAndPassword(auth, email, pass); closeLoginModal(); } catch (error) { document.getElementById('loginError').innerText = "Error: " + error.message; document.getElementById('loginError').style.display = 'block'; }
-        }
-        window.handleLogout = async () => { if(confirm("Log out now?")) await signOut(auth); }
-
-        const q = query(collection(db, "gear"), orderBy("category"));
-        onSnapshot(q, (snapshot) => { 
-            window.appData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
-            renderList();
-            if(document.getElementById('view-checkout').classList.contains('active')) renderManifest();
-        });
-
-        loadCartLocally();
-
+        
+        // --- 2. CONNECT FIREBASE FUNCTIONS TO WINDOW ---
+        // This makes them accessible to the global UI functions
+        
         window.saveItem = async function() {
             if(!window.isAdmin) return;
             const newItem = { type: document.getElementById('itemType').value, category: document.getElementById('itemCategory').value, desc: document.getElementById('itemDesc').value, sn: document.getElementById('itemSerial').value || 'N/A', qty: document.getElementById('itemQty').value, status: "OK", image: window.tempImageURL };
@@ -344,108 +575,27 @@
             }
             catch(e) { alert("Error: " + e.message); }
         }
-        
-        window.startNewOrder = () => {
-            if(!confirm("Clear receipt and start new order?")) return;
-            window.cart = {}; saveCartLocally(); updateCartBadge(); updateClearButton(); renderManifest();
-            document.getElementById('clientName').value = ""; document.getElementById('clientEmail').value = ""; document.getElementById('returnDate').value = "";
-            window.isCheckoutComplete = false; document.getElementById('checkoutBtn').style.display = 'block'; document.getElementById('newOrderBtn').style.display = 'none';
-            document.querySelector('.nav-item').click();
-        }
 
-        // --- RECEIPT PREVIEW LOGIC ---
-        window.generateReceiptPreview = function() {
-            const client = document.getElementById('clientName').value || "Client";
-            const date = document.getElementById('returnDate').value || "TBD";
-            const tbody = document.getElementById('print-tbody');
-            const meta = document.getElementById('print-meta');
-            
-            const cartIds = Object.keys(window.cart);
-            if(cartIds.length === 0) { alert("Cart is empty"); return; }
-            
-            meta.innerHTML = `Client: <b>${client}</b><br>Return Date: <b>${date}</b><br>Date Issued: ${new Date().toLocaleDateString()}`;
-            tbody.innerHTML = '';
-            
-            cartIds.forEach(id => {
-                const item = window.appData.find(i => i.id === id);
-                const data = window.cart[id];
-                tbody.innerHTML += `<tr><td style="text-align:center;">${data.qty}</td><td><b>${item.category}</b> ${item.desc}</td><td>${item.sn}</td><td>${data.notes || '-'}</td></tr>`;
-            });
-            
-            switchTab('view-receipt', document.querySelector('.nav-item')); 
-            document.querySelector('.bottom-nav').style.display = 'none';
+        window.handleLogin = async () => {
+            const email = document.getElementById('loginEmail').value; const pass = document.getElementById('loginPassword').value;
+            try { await signInWithEmailAndPassword(auth, email, pass); closeLoginModal(); } catch (error) { document.getElementById('loginError').innerText = "Error: " + error.message; document.getElementById('loginError').style.display = 'block'; }
         }
+        window.handleLogout = async () => { if(confirm("Log out now?")) await signOut(auth); }
 
-        window.closeReceiptPreview = function() {
-            switchTab('view-checkout', document.querySelectorAll('.nav-item')[1]);
-            document.querySelector('.bottom-nav').style.display = 'flex';
-            // Re-render inventory
+        // Listener
+        const q = query(collection(db, "gear"), orderBy("category"));
+        onSnapshot(q, (snapshot) => { 
+            window.appData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
             renderList();
-        }
+        });
 
-        window.clearSelection = () => {
-            if(Object.keys(window.cart).length === 0) return;
-            if(!confirm("Clear all selected items?")) return;
-            window.cart = {}; saveCartLocally(); updateCartBadge(); updateClearButton(); renderList();
-        }
-        
-        function updateClearButton() {
-            const hasItems = Object.keys(window.cart).length > 0;
-            const btn = document.getElementById('deselectBtn');
-            if(btn) btn.style.display = hasItems ? 'block' : 'none';
-        }
-
-        window.renderList = function() {
-            const listContainer = document.getElementById('inventory-list');
-            listContainer.innerHTML = '';
-            const query = document.getElementById('searchBox').value.toLowerCase();
-            const filteredItems = window.appData.filter(item => {
-                const matchesSearch = (item.desc || "").toLowerCase().includes(query) || (item.category || "").toLowerCase().includes(query);
-                
-                // FILTER LOGIC
-                let matchesType = false;
-                if(window.currentTypeFilter === 'ALL') matchesType = true;
-                else {
-                    let itemType = (item.type || "").toUpperCase(); 
-                    if(window.currentTypeFilter === itemType) matchesType = true;
-                    // FALLBACKS
-                    else if(window.currentTypeFilter === 'CAMERAS' && itemType === 'CAMERA') matchesType = true;
-                    else if(window.currentTypeFilter === 'GRIP' && itemType === 'GRIP') matchesType = true;
-                    else if(window.currentTypeFilter === itemType) matchesType = true;
-                }
-                return matchesSearch && matchesType;
-            });
-
-            // Smart Text Filtering Logic (Fallback if DB tag is generic)
-            const finalFiltered = filteredItems.filter(item => {
-                if (window.currentTypeFilter === 'ALL') return true;
-                const txt = (item.category + " " + item.desc).toUpperCase();
-                // If the DB already has the correct tag, use it
-                if ((item.type || "").toUpperCase() === window.currentTypeFilter) return true;
-                
-                // Otherwise check text
-                if (window.currentTypeFilter === 'CAMERAS') return (item.type === 'Camera' && !txt.includes('LENS') && !txt.includes('FILTER') && !txt.includes('MONITOR') && !txt.includes('BATTERY'));
-                if (window.currentTypeFilter === 'LENSES') return txt.includes('LENS');
-                if (window.currentTypeFilter === 'MONITORS') return txt.includes('MONITOR');
-                if (window.currentTypeFilter === 'BATTERIES') return txt.includes('BATTERY') || txt.includes('CHARGER');
-                if (window.currentTypeFilter === 'FILTERS') return txt.includes('FILTER') || txt.includes('ND') || txt.includes('POLA');
-                if (window.currentTypeFilter === 'TRIPODS') return txt.includes('TRIPOD') || txt.includes('HEAD');
-                if (window.currentTypeFilter === 'GRIP') return item.type === 'Grip';
-                if (window.currentTypeFilter === 'AUDIO') return item.type === 'Audio';
-                if (window.currentTypeFilter === 'LIGHTING') return item.type === 'Lighting';
-                return false;
-            });
-
-            finalFiltered.forEach(item => {
-                const id = item.id; const isSelected = window.cart.hasOwnProperty(id); const isRented = item.status === "OUT";
-                const el = document.createElement('div'); el.className = `inventory-item ${isSelected ? 'selected' : ''} ${isRented ? 'rented' : ''}`;
-                let imageHTML = `<div class="item-thumb">📷</div>`; if(item.image) { imageHTML = `<div class="item-thumb"><img src="${item.image}"></div>`; }
-                let checkInBtn = isRented ? `<button class="checkin-btn" onclick="checkInItem('${id}', event)">Check In</button>` : "";
-                let statusBadge = isRented ? `<span class="qty-badge" style="background:var(--danger); color:white;">OUT</span>` : `<span class="qty-badge">Qty: ${item.qty}</span>`;
-                el.innerHTML = `<div class="check-circle" onclick="toggleSelection('${id}')"></div>${imageHTML}<div class="item-content-clickable" onclick="toggleSelection('${id}')"><div class="item-category">${item.category}</div><div class="item-name">${item.desc}</div><div class="item-meta">${statusBadge} <span>SN: ${item.sn}</span></div></div>${checkInBtn}<div class="edit-btn admin-only" onclick="openModal('${id}')">✎</div>`;
-                listContainer.appendChild(el);
-            });
-        }
+        // Auth Listener
+        onAuthStateChanged(auth, (user) => {
+            const btn = document.getElementById('authBtn');
+            if (user) { window.isAdmin = true; document.body.classList.add('admin-mode'); btn.innerText = "Log Out"; btn.classList.add('logged-in'); btn.onclick = handleLogout; } 
+            else { window.isAdmin = false; document.body.classList.remove('admin-mode'); btn.innerText = "Log In"; btn.classList.remove('logged-in'); btn.onclick = openLoginModal; }
+            renderList();
+        });
     </script>
 </body>
 </html>

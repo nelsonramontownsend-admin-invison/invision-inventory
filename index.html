@@ -4,35 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>iNVISION MEDIA LLC</title>
+    
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
+    
     <style>
-        :root { --primary: #64D2FF; --bg: #000000; --card: #1C1C1E; --text: #FFFFFF; --gray: #AEAEB2; --border: #2C2C2E; --input-bg: #2C2C2E; --danger: #FF453A; --success: #32D74B; }
+        /* --- THEME --- */
+        :root { --primary: #64D2FF; --bg: #000000; --card: #1C1C1E; --text: #FFFFFF; --gray: #AEAEB2; --border: #2C2C2E; --input-bg: #2C2C2E; --danger: #FF453A; --success: #32D74B; --share: #0A84FF; }
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; padding-bottom: 90px; -webkit-tap-highlight-color: transparent; }
         .view { display: none; }
         .view.active { display: block; }
-        
+
         /* HEADER */
         .app-header { background: rgba(28, 28, 30, 0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); padding: 10px 15px; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; width: 100%; min-height: 45px; }
         .logo-container { flex: 1; display: flex; align-items: center; justify-content: flex-start; overflow: hidden; } 
         .company-logo { max-height: 40px; max-width: 60px; object-fit: contain; margin-right: 10px; }
-        .brand-name { font-family: 'Arial Black', sans-serif; font-size: 18px; font-weight: 900; color: black; -webkit-text-stroke: 1px var(--primary); letter-spacing: -0.5px; white-space: nowrap; }
+        .brand-name { font-family: 'Arial Black', sans-serif; font-size: 18px; font-weight: 900; color: black; -webkit-text-stroke: 1px var(--primary); text-transform: uppercase; letter-spacing: -0.5px; white-space: nowrap; }
+        .admin-lock { font-size: 24px; cursor: pointer; padding: 10px; color: var(--gray); flex-shrink: 0; margin-left: 15px; background: rgba(255,255,255,0.05); border-radius: 50%; } 
+        .admin-lock.unlocked { color: var(--primary); }
         .auth-btn { font-size: 14px; font-weight: 600; cursor: pointer; padding: 8px 16px; color: var(--primary); border: 1px solid var(--primary); border-radius: 20px; background: rgba(100, 210, 255, 0.1); transition: all 0.2s; }
         .auth-btn.logged-in { border-color: var(--danger); color: var(--danger); background: rgba(255, 69, 58, 0.1); }
 
-        /* SCROLLABLE TABS */
+        /* CONTROLS */
         #top-controls { display: block; overflow: hidden; transition: max-height 0.3s ease; }
         .tab-scroller { overflow-x: auto; white-space: nowrap; padding-bottom: 10px; margin-bottom: 5px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .tab-scroller::-webkit-scrollbar { display: none; }
         .segment-control { display: inline-flex; background: var(--input-bg); border-radius: 9px; padding: 2px; }
         .segment-btn { border: none; background: none; padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--gray); border-radius: 7px; cursor: pointer; margin-right: 2px; }
         .segment-btn.active { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-        
-        /* SEARCH & CLEAR */
         .search-wrapper { position: relative; width: 100%; display: flex; gap: 10px; }
-        .search-input { width: 100%; padding: 10px 35px 10px 15px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 16px; box-sizing: border-box; outline: none; padding-right: 80px; }
+        .search-input { width: 100%; padding: 10px 35px 10px 15px; border-radius: 10px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); font-size: 16px; box-sizing: border-box; outline: none; }
+        .search-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--gray); font-size: 16px; background: rgba(255,255,255,0.1); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; display: none; }
+        
+        /* DESELECT BUTTON */
         .deselect-btn { background: var(--gray); color: black; border: none; border-radius: 10px; padding: 0 15px; font-weight: 600; font-size: 13px; cursor: pointer; white-space: nowrap; display: none; position: absolute; right: 10px; top: 12px; z-index: 20; }
+        .search-input { padding-right: 80px; }
 
         /* LIST */
         .container { max-width: 800px; margin: 0 auto; padding: 15px; }
@@ -48,13 +55,13 @@
         .item-meta { font-size: 12px; color: var(--gray); font-family: monospace; display: flex; gap: 8px; align-items: center; margin-top: 2px; }
         .qty-badge { background: var(--input-bg); color: var(--text); padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 10px; border: 1px solid var(--border); }
         .checkin-btn { background: var(--input-bg); color: #32D74B; font-weight: bold; font-size: 10px; padding: 6px 10px; border-radius: 6px; border: 1px solid #32D74B; cursor: pointer; margin-left: auto; z-index: 10; }
-        .check-circle { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--gray); margin-right: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
-        .inventory-item.selected .check-circle { background: var(--primary); border-color: var(--primary); }
-        .inventory-item.selected .check-circle::after { content: '✓'; color: var(--bg); font-weight: bold; font-size: 14px; }
-        .edit-btn { padding: 10px; color: var(--gray); font-size: 18px; cursor: pointer; margin-left: auto; flex-shrink: 0; }
         
         .admin-only { display: none !important; }
         body.admin-mode .admin-only { display: flex !important; }
+        .edit-btn { padding: 10px; color: var(--gray); font-size: 18px; cursor: pointer; margin-left: auto; flex-shrink: 0; }
+        .check-circle { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--gray); margin-right: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+        .inventory-item.selected .check-circle { background: var(--primary); border-color: var(--primary); }
+        .inventory-item.selected .check-circle::after { content: '✓'; color: var(--bg); font-weight: bold; font-size: 14px; }
 
         /* CHECKOUT UI */
         .checkout-section { background: var(--card); padding: 20px; margin: 0 15px 15px 15px; border-radius: 12px; border: 1px solid var(--border); }
@@ -74,7 +81,7 @@
         .form-input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 8px; margin-bottom: 5px; box-sizing: border-box; }
         .btn-primary { background: var(--primary); color: var(--bg); border: none; padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 2; white-space: nowrap; }
         .btn-secondary { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
-        .btn-danger { background: var(--warning); color: black; border: none; padding: 10px; margin-top: 10px; width: 100%; font-weight: bold; border-radius: 8px; cursor: pointer; }
+        .btn-share { background: var(--share); color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; flex: 1; white-space: nowrap; }
         .btn-new-order { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; margin-top: 10px; display: none; }
 
         /* RECEIPT VIEW */
@@ -97,6 +104,7 @@
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal-content { background: var(--card); width: 90%; max-width: 400px; padding: 25px; border-radius: 16px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border); color: var(--text); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .form-label { display: block; font-size: 12px; font-weight: bold; color: var(--gray); margin-bottom: 5px; margin-top: 10px; }
         .image-preview-box { width: 100%; height: 150px; background: var(--bg); border: 2px dashed var(--border); border-radius: 8px; margin-top: 5px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; cursor: pointer; }
         .image-preview-box img { width: 100%; height: 100%; object-fit: contain; display: none; }
         .image-preview-text { color: var(--gray); font-size: 14px; font-weight: 500; pointer-events: none; }
@@ -128,11 +136,6 @@
                 <span id="logo-text" class="brand-name">iNVISION MEDIA LLC</span>
             </div>
             <button id="authBtn" class="auth-btn" onclick="openLoginModal()">Log In</button>
-        </div>
-        
-        <div id="admin-controls-panel" class="admin-only" style="padding:10px; background:var(--input-bg); border-radius:8px; margin-bottom:10px;">
-            <div style="font-size:12px; font-weight:bold; color:var(--gray); margin-bottom:5px;">ADMIN PANEL</div>
-            <button class="btn-danger" onclick="uploadLocalDataToCloud()">⚠️ Update Cloud Database (Fix Tabs)</button>
         </div>
         
         <div id="top-controls">
@@ -179,6 +182,7 @@
             <div class="signature-box">Sign Here</div>
             <div class="action-buttons">
                 <button class="btn-secondary" onclick="generateReceiptPreview()">📄 Generate Receipt</button>
+                <button class="btn-share" onclick="shareManifest()">📤 Share Text</button>
                 <button id="checkoutBtn" class="btn-primary" onclick="handleCheckout()">Done (Mark Rented)</button>
             </div>
             <button id="newOrderBtn" class="btn-new-order" onclick="startNewOrder()">Start New Rental ↻</button>
@@ -312,46 +316,6 @@
             if(document.getElementById('view-checkout').classList.contains('active')) renderManifest();
         });
 
-        // --- RESTORED UPLOAD FUNCTION ---
-        window.uploadLocalDataToCloud = async function() {
-            if(!confirm("DANGER: This will WIPE the current cloud database and upload items from inventory.js. Continue?")) return;
-            const localData = window.inventory || []; 
-            if(localData.length === 0) { alert("No local data found in inventory.js"); return; }
-            
-            const btn = document.querySelector('.btn-danger');
-            btn.innerText = "Uploading... (Do not close)";
-            
-            try {
-                // 1. Wipe Old Data
-                const snapshot = await getDocs(collection(db, "gear"));
-                const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
-                await Promise.all(deletePromises);
-                console.log("Old data wiped.");
-                
-                // 2. Upload New Data
-                let count = 0;
-                for(let item of localData) {
-                    const newItem = {
-                        category: item.category || "",
-                        desc: item.desc || "",
-                        image: item.image || "",
-                        qty: item.qty || "1",
-                        sn: item.sn || "N/A",
-                        status: "OK", 
-                        type: item.type || "Camera"
-                    };
-                    await addDoc(collection(db, "gear"), newItem);
-                    count++;
-                }
-                alert(`Success! Database refreshed with ${count} items.`);
-                location.reload();
-            } catch(e) {
-                alert("Error: " + e.message);
-            } finally {
-                btn.innerText = "⚠️ Update Cloud Database";
-            }
-        }
-
         loadCartLocally();
 
         window.saveItem = async function() {
@@ -441,18 +405,17 @@
             const filteredItems = window.appData.filter(item => {
                 const matchesSearch = (item.desc || "").toLowerCase().includes(query) || (item.category || "").toLowerCase().includes(query);
                 
-                // FILTER LOGIC
+                // FILTER LOGIC - UPDATED
                 let matchesType = false;
                 if(window.currentTypeFilter === 'ALL') matchesType = true;
                 else {
-                    // Normalize the item type from Cloud
                     let itemType = (item.type || "").toUpperCase(); 
                     if(window.currentTypeFilter === itemType) matchesType = true;
-                    // FALLBACKS (if DB data isn't perfect yet)
+                    // FALLBACKS
                     else if(window.currentTypeFilter === 'CAMERAS' && itemType === 'CAMERA') matchesType = true;
                     else if(window.currentTypeFilter === 'GRIP' && itemType === 'GRIP') matchesType = true;
+                    else if(window.currentTypeFilter === itemType) matchesType = true;
                 }
-                
                 return matchesSearch && matchesType;
             });
 
@@ -460,10 +423,6 @@
             const finalFiltered = filteredItems.filter(item => {
                 if (window.currentTypeFilter === 'ALL') return true;
                 const txt = (item.category + " " + item.desc).toUpperCase();
-                // If the DB already has the correct tag, use it
-                if ((item.type || "").toUpperCase() === window.currentTypeFilter) return true;
-                
-                // Otherwise check text
                 if (window.currentTypeFilter === 'CAMERAS') return (item.type === 'Camera' && !txt.includes('LENS') && !txt.includes('FILTER') && !txt.includes('MONITOR') && !txt.includes('BATTERY'));
                 if (window.currentTypeFilter === 'LENSES') return txt.includes('LENS');
                 if (window.currentTypeFilter === 'MONITORS') return txt.includes('MONITOR');
@@ -513,7 +472,7 @@
             if(navItem) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); navItem.classList.add('active'); }
             const controls = document.getElementById('top-controls'); 
             // Hide top controls for checkout OR receipt view
-            if(viewId === 'view-checkout' || viewId === 'view-receipt') { controls.style.display = 'none'; } else { controls.style.display = 'block'; }
+            if(viewId === 'view-checkout' || viewId === 'view-receipt') { controls.style.display = 'none'; renderManifest(); } else { controls.style.display = 'block'; }
             if(viewId === 'view-checkout') renderManifest(); 
         };
         window.updateCartBadge = () => { const count = Object.keys(window.cart).length; document.getElementById('cart-badge').innerText = count; document.getElementById('cart-badge').style.display = count > 0 ? 'block' : 'none'; };
@@ -534,6 +493,34 @@
                 row.innerHTML = `<div class="manifest-top"><div><div style="font-size:11px; font-weight:700; color:var(--primary);">${item.category}</div><div style="font-weight:600; color:var(--text);">${item.desc}</div></div><div class="remove-btn" onclick="removeFromCart('${item.id}')">✕</div></div><div class="manifest-controls"><div class="stepper"><button class="stepper-btn" onclick="adjustQty('${item.id}', -1)">-</button><div class="stepper-val">${cartData.qty}</div><button class="stepper-btn" onclick="adjustQty('${item.id}', 1)">+</button></div><input type="text" class="condition-input" value="${cartData.notes}" placeholder="Condition / Notes" oninput="updateCartItem('${item.id}', 'notes', this.value)"></div>`;
                 container.appendChild(row);
             });
+        }
+
+        // --- NEW SHARE MANIFEST (TEXT ONLY FALLBACK) ---
+        window.shareManifest = function() {
+            const client = document.getElementById('clientName').value || "Client";
+            const date = document.getElementById('returnDate').value || "TBD";
+            let text = `RENTAL MANIFEST\nClient: ${client}\nReturn: ${date}\n------------------\n\n`;
+            
+            const cartIds = Object.keys(window.cart);
+            if(cartIds.length === 0) { alert("Cart is empty!"); return; }
+            
+            cartIds.forEach(id => {
+                const item = window.appData.find(i => i.id === id);
+                const data = window.cart[id];
+                text += `[x${data.qty}] ${item.category} ${item.desc} (${item.sn})\n`;
+                if(data.notes) text += `   Note: ${data.notes}\n`;
+                text += `\n`;
+            });
+            text += `------------------\n`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: `Rental: ${client}`,
+                    text: text
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(text).then(() => alert("Receipt copied to clipboard!"));
+            }
         }
     </script>
 </body>

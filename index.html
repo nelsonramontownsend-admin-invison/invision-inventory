@@ -21,6 +21,8 @@
         .logo-container { flex: 1; display: flex; align-items: center; justify-content: flex-start; overflow: hidden; } 
         .company-logo { max-height: 40px; max-width: 60px; object-fit: contain; margin-right: 10px; }
         .brand-name { font-family: 'Arial Black', sans-serif; font-size: 18px; font-weight: 900; color: black; -webkit-text-stroke: 1px var(--primary); letter-spacing: -0.5px; white-space: nowrap; }
+        .admin-lock { font-size: 24px; cursor: pointer; padding: 10px; color: var(--gray); flex-shrink: 0; margin-left: 15px; background: rgba(255,255,255,0.05); border-radius: 50%; } 
+        .admin-lock.unlocked { color: var(--primary); }
         .auth-btn { font-size: 14px; font-weight: 600; cursor: pointer; padding: 8px 16px; color: var(--primary); border: 1px solid var(--primary); border-radius: 20px; background: rgba(100, 210, 255, 0.1); transition: all 0.2s; }
         .auth-btn.logged-in { border-color: var(--danger); color: var(--danger); background: rgba(255, 69, 58, 0.1); }
 
@@ -80,7 +82,7 @@
         .btn-danger { background: var(--warning); color: black; border: none; padding: 10px; margin-top: 10px; width: 100%; font-weight: bold; border-radius: 8px; cursor: pointer; }
         .btn-new-order { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); padding: 16px; width: 100%; font-size: 17px; font-weight: 600; border-radius: 12px; cursor: pointer; margin-top: 10px; display: none; }
 
-        /* RECEIPT VIEW (PAGE SWAP) */
+        /* RECEIPT VIEW */
         #view-receipt { background: #555; min-height: 100vh; padding: 20px; display: none; }
         #view-receipt.active { display: block; }
         .paper-sheet { background: white; color: black; max-width: 700px; margin: 0 auto; padding: 40px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -281,241 +283,9 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // --- GLOBAL STATE ---
-        window.appData = []; 
-        window.cart = {}; 
-        window.currentTypeFilter = 'ALL'; 
-        window.editingId = null; 
-        window.tempImageURL = ""; 
-        window.isAdmin = false; 
-        window.isCheckoutComplete = false;
+        window.appData = []; window.cart = {}; window.currentTypeFilter = 'ALL'; window.editingId = null; window.tempImageURL = ""; window.isAdmin = false; window.isCheckoutComplete = false;
 
-        // --- GLOBAL UI FUNCTIONS ---
-        // (Attached to window so HTML buttons can see them)
-        
-        window.filterType = (type, btn) => {
-            window.currentTypeFilter = type;
-            document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-            renderList();
-        }
-
-        window.handleSearch = () => {
-            const val = document.getElementById('searchBox').value;
-            document.getElementById('clearBtn').style.display = val.length > 0 ? 'flex' : 'none';
-            renderList();
-        }
-
-        window.clearSearch = () => {
-            document.getElementById('searchBox').value = '';
-            handleSearch();
-        }
-
-        window.clearSelection = () => {
-            if(Object.keys(window.cart).length === 0) return;
-            if(!confirm("Clear all selected items?")) return;
-            window.cart = {}; saveCartLocally(); updateCartBadge(); updateClearButton(); renderList();
-        }
-        
-        window.toggleSelection = (id) => {
-            if (window.cart.hasOwnProperty(id)) { delete window.cart[id]; } 
-            else { window.cart[id] = { qty: 1, notes: "" }; }
-            saveCartLocally(); renderList(); updateCartBadge(); updateClearButton();
-        }
-        
-        window.updateCartBadge = () => {
-            const count = Object.keys(window.cart).length;
-            document.getElementById('cart-badge').innerText = count;
-            document.getElementById('cart-badge').style.display = count > 0 ? 'block' : 'none';
-        }
-        
-        function updateClearButton() {
-            const hasItems = Object.keys(window.cart).length > 0;
-            const btn = document.getElementById('deselectBtn');
-            if(btn) btn.style.display = hasItems ? 'block' : 'none';
-        }
-
-        window.adjustQty = (id, change) => {
-            if(!window.cart[id]) return;
-            const item = window.appData.find(i => i.id === id);
-            const maxQty = parseInt(item.qty) || 1;
-            let newQty = window.cart[id].qty + change;
-            if (newQty < 1) newQty = 1;
-            if (newQty > maxQty) newQty = maxQty;
-            window.cart[id].qty = newQty;
-            renderManifest();
-        }
-        
-        window.removeFromCart = (id) => {
-            delete window.cart[id];
-            saveCartLocally();
-            updateCartBadge();
-            updateClearButton();
-            renderManifest();
-            renderList();
-        }
-        
-        window.updateCartItem = (id, field, value) => {
-            if (window.cart[id]) window.cart[id][field] = value;
-            saveCartLocally();
-        }
-
-        window.switchTab = (viewId, navItem) => {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            
-            if(navItem) {
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                navItem.classList.add('active');
-            }
-            
-            const controls = document.getElementById('top-controls');
-            if(viewId === 'view-checkout' || viewId === 'view-receipt') { 
-                controls.style.display = 'none'; 
-                renderManifest(); 
-            } else { 
-                controls.style.display = 'block'; 
-            }
-        }
-        
-        window.openModal = function(id) {
-            const modal = document.getElementById('itemModal');
-            const title = document.getElementById('modalTitle');
-            const imgPrev = document.getElementById('imagePreview');
-            document.getElementById('fileInput').value = "";
-            imgPrev.src = ""; imgPrev.style.display = "none";
-            document.getElementById('previewText').style.display = "block";
-            window.tempImageURL = "";
-
-            if (id === null) {
-                window.editingId = null; title.innerText = "Add New Item";
-                document.getElementById('itemType').value = "CAMERAS";
-            } else {
-                window.editingId = id;
-                const item = window.appData.find(i => i.id === id);
-                title.innerText = "Edit Item";
-                document.getElementById('itemType').value = item.type || "CAMERAS";
-                document.getElementById('itemCategory').value = item.category || "";
-                document.getElementById('itemDesc').value = item.desc || "";
-                document.getElementById('itemSerial').value = item.sn || "";
-                document.getElementById('itemQty').value = item.qty || 1;
-                if(item.image) {
-                    imgPrev.src = item.image; imgPrev.style.display = "block";
-                    document.getElementById('previewText').style.display = "none";
-                    window.tempImageURL = item.image;
-                }
-            }
-            modal.style.display = 'flex';
-        }
-        
-        window.closeModal = () => document.getElementById('itemModal').style.display = 'none';
-        window.openLoginModal = () => { document.getElementById('loginModal').style.display = 'flex'; document.getElementById('loginError').style.display = 'none'; }
-        window.closeLoginModal = () => { document.getElementById('loginModal').style.display = 'none'; }
-        
-        window.handleImageUpload = (input) => {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('imagePreview').src = e.target.result;
-                    document.getElementById('imagePreview').style.display = 'block';
-                    document.getElementById('previewText').style.display = 'none';
-                    window.tempImageURL = e.target.result;
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        // --- RECEIPT PREVIEW LOGIC ---
-        window.generateReceiptPreview = function() {
-            const client = document.getElementById('clientName').value || "Client";
-            const date = document.getElementById('returnDate').value || "TBD";
-            const tbody = document.getElementById('print-tbody');
-            const meta = document.getElementById('print-meta');
-            const cartIds = Object.keys(window.cart);
-            if(cartIds.length === 0) { alert("Cart is empty"); return; }
-            
-            meta.innerHTML = `Client: <b>${client}</b><br>Return Date: <b>${date}</b><br>Date Issued: ${new Date().toLocaleDateString()}`;
-            tbody.innerHTML = '';
-            
-            cartIds.forEach(id => {
-                const item = window.appData.find(i => i.id === id);
-                if(item) {
-                    const data = window.cart[id];
-                    tbody.innerHTML += `<tr><td style="text-align:center;">${data.qty}</td><td><b>${item.category}</b> ${item.desc}</td><td>${item.sn}</td><td>${data.notes || '-'}</td></tr>`;
-                }
-            });
-            switchTab('view-receipt', document.querySelector('.nav-item')); 
-            document.querySelector('.bottom-nav').style.display = 'none';
-        }
-
-        window.closeReceiptPreview = function() {
-            switchTab('view-checkout', document.querySelectorAll('.nav-item')[1]);
-            document.querySelector('.bottom-nav').style.display = 'flex';
-        }
-
-        // --- RENDER ---
-        window.renderList = function() {
-            const listContainer = document.getElementById('inventory-list');
-            listContainer.innerHTML = '';
-            
-            if (!window.appData || window.appData.length === 0) {
-                 listContainer.innerHTML = '<div style="padding:20px; text-align:center; color:var(--gray);">Loading...</div>'; 
-                 return; 
-            }
-
-            const query = document.getElementById('searchBox').value.toLowerCase();
-            const filteredItems = window.appData.filter(item => {
-                const matchesSearch = (item.desc || "").toLowerCase().includes(query) || (item.category || "").toLowerCase().includes(query);
-                
-                let matchesType = false;
-                if(window.currentTypeFilter === 'ALL') matchesType = true;
-                else {
-                    let itemType = (item.type || "").toUpperCase(); 
-                    if(window.currentTypeFilter === itemType) matchesType = true;
-                    else if(window.currentTypeFilter === 'CAMERAS' && itemType === 'CAMERA') matchesType = true;
-                    else if(window.currentTypeFilter === 'GRIP' && itemType === 'GRIP') matchesType = true;
-                    else if(window.currentTypeFilter === itemType) matchesType = true;
-                }
-                return matchesSearch && matchesType;
-            });
-
-            filteredItems.forEach(item => {
-                const id = item.id; 
-                const isSelected = window.cart.hasOwnProperty(id); 
-                const isRented = item.status === "OUT";
-                const el = document.createElement('div'); 
-                el.className = `inventory-item ${isSelected ? 'selected' : ''} ${isRented ? 'rented' : ''}`;
-                
-                let imageHTML = `<div class="item-thumb">📷</div>`; 
-                if(item.image) { imageHTML = `<div class="item-thumb"><img src="${item.image}"></div>`; }
-                
-                let checkInBtn = isRented ? `<button class="checkin-btn" onclick="checkInItem('${id}', event)">Check In</button>` : "";
-                let statusBadge = isRented ? `<span class="qty-badge" style="background:var(--danger); color:white;">OUT</span>` : `<span class="qty-badge">Qty: ${item.qty}</span>`;
-
-                el.innerHTML = `
-                    <div class="check-circle" onclick="toggleSelection('${id}')"></div>
-                    ${imageHTML}
-                    <div class="item-content-clickable" onclick="toggleSelection('${id}')">
-                        <div class="item-category">${item.category}</div>
-                        <div class="item-name">${item.desc}</div>
-                        <div class="item-meta">${statusBadge} <span>SN: ${item.sn}</span></div>
-                    </div>
-                    ${checkInBtn}
-                    <div class="edit-btn admin-only" onclick="openModal('${id}')">✎</div>
-                `;
-                listContainer.appendChild(el);
-            });
-            
-            if(!window.isAdmin) {
-                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-            } else {
-                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
-            }
-        }
-        
-        function saveCartLocally() {
-            try { localStorage.setItem('invision_cart', JSON.stringify(window.cart)); } catch(e) {}
-        }
+        function saveCartLocally() { try { localStorage.setItem('invision_cart', JSON.stringify(window.cart)); } catch(e) {} }
         function loadCartLocally() {
             try {
                 const saved = localStorage.getItem('invision_cart');
@@ -523,15 +293,51 @@
             } catch(e) { window.cart = {}; }
         }
 
-        // --- FIREBASE LOGIC (ATTACHED TO WINDOW) ---
+        onAuthStateChanged(auth, (user) => {
+            const btn = document.getElementById('authBtn');
+            if (user) { window.isAdmin = true; document.body.classList.add('admin-mode'); btn.innerText = "Log Out"; btn.classList.add('logged-in'); btn.onclick = handleLogout; } 
+            else { window.isAdmin = false; document.body.classList.remove('admin-mode'); btn.innerText = "Log In"; btn.classList.remove('logged-in'); btn.onclick = openLoginModal; }
+            renderList();
+        });
+
+        window.openLoginModal = () => { document.getElementById('loginModal').style.display = 'flex'; document.getElementById('loginError').style.display = 'none'; }
+        window.closeLoginModal = () => { document.getElementById('loginModal').style.display = 'none'; }
         window.handleLogin = async () => {
-            const email = document.getElementById('loginEmail').value; 
-            const pass = document.getElementById('loginPassword').value;
-            try { await signInWithEmailAndPassword(auth, email, pass); closeLoginModal(); } 
-            catch (error) { document.getElementById('loginError').innerText = "Error: " + error.message; document.getElementById('loginError').style.display = 'block'; }
+            const email = document.getElementById('loginEmail').value; const pass = document.getElementById('loginPassword').value;
+            try { await signInWithEmailAndPassword(auth, email, pass); closeLoginModal(); } catch (error) { document.getElementById('loginError').innerText = "Error: " + error.message; document.getElementById('loginError').style.display = 'block'; }
         }
-        
         window.handleLogout = async () => { if(confirm("Log out now?")) await signOut(auth); }
+
+        const q = query(collection(db, "gear"), orderBy("category"));
+        onSnapshot(q, (snapshot) => { 
+            window.appData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
+            renderList();
+            
+            // AUTO RE-RENDER MANIFEST IF CHECKOUT IS OPEN
+            // This fixes the "Blank Checkout" bug on refresh
+            if(document.getElementById('view-checkout').style.display !== 'none') {
+                renderManifest();
+            }
+        });
+
+        window.uploadLocalDataToCloud = async function() {
+            if(!confirm("DANGER: This will WIPE the current cloud database and upload items from inventory.js. Continue?")) return;
+            const localData = window.inventory || []; 
+            if(localData.length === 0) { alert("No local data found in inventory.js"); return; }
+            const btn = document.querySelector('.btn-danger');
+            btn.innerText = "Uploading... (Do not close)";
+            try {
+                const snapshot = await getDocs(collection(db, "gear"));
+                const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+                await Promise.all(deletePromises);
+                let count = 0;
+                for(let item of localData) { await addDoc(collection(db, "gear"), item); count++; }
+                alert(`Success! Database refreshed with ${count} items.`);
+                location.reload();
+            } catch(e) { alert("Error: " + e.message); } finally { btn.innerText = "⚠️ Update Cloud Database"; }
+        }
+
+        loadCartLocally();
 
         window.saveItem = async function() {
             if(!window.isAdmin) return;
@@ -573,41 +379,160 @@
             document.querySelector('.nav-item').click();
         }
 
-        // --- UPLOAD FUNCTION ---
-        window.uploadLocalDataToCloud = async function() {
-            if(!confirm("DANGER: This will WIPE the current cloud database and upload items from inventory.js. Continue?")) return;
-            const localData = window.inventory || []; 
-            if(localData.length === 0) { alert("No local data found in inventory.js"); return; }
-            const btn = document.querySelector('.btn-danger');
-            btn.innerText = "Uploading... (Do not close)";
-            try {
-                const snapshot = await getDocs(collection(db, "gear"));
-                const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
-                await Promise.all(deletePromises);
-                let count = 0;
-                for(let item of localData) { await addDoc(collection(db, "gear"), item); count++; }
-                alert(`Success! Database refreshed with ${count} items.`);
-                location.reload();
-            } catch(e) { alert("Error: " + e.message); } finally { btn.innerText = "⚠️ Update Cloud Database"; }
+        window.generateReceiptPreview = function() {
+            const client = document.getElementById('clientName').value || "Client";
+            const date = document.getElementById('returnDate').value || "TBD";
+            const tbody = document.getElementById('print-tbody');
+            const meta = document.getElementById('print-meta');
+            const cartIds = Object.keys(window.cart);
+            if(cartIds.length === 0) { alert("Cart is empty"); return; }
+            meta.innerHTML = `Client: <b>${client}</b><br>Return Date: <b>${date}</b><br>Date Issued: ${new Date().toLocaleDateString()}`;
+            tbody.innerHTML = '';
+            cartIds.forEach(id => {
+                const item = window.appData.find(i => i.id === id);
+                if(item) {
+                    const data = window.cart[id];
+                    tbody.innerHTML += `<tr><td style="text-align:center;">${data.qty}</td><td><b>${item.category}</b> ${item.desc}</td><td>${item.sn}</td><td>${data.notes || '-'}</td></tr>`;
+                }
+            });
+            switchTab('view-receipt', document.querySelector('.nav-item')); 
+            document.querySelector('.bottom-nav').style.display = 'none';
         }
 
-        // --- INIT ---
-        loadCartLocally();
-        
-        // Listener
-        onAuthStateChanged(auth, (user) => {
-            const btn = document.getElementById('authBtn');
-            if (user) { window.isAdmin = true; document.body.classList.add('admin-mode'); btn.innerText = "Log Out"; btn.classList.add('logged-in'); btn.onclick = handleLogout; } 
-            else { window.isAdmin = false; document.body.classList.remove('admin-mode'); btn.innerText = "Log In"; btn.classList.remove('logged-in'); btn.onclick = openLoginModal; }
-            renderList();
-        });
+        window.closeReceiptPreview = function() {
+            switchTab('view-checkout', document.querySelectorAll('.nav-item')[1]);
+            document.querySelector('.bottom-nav').style.display = 'flex';
+        }
 
-        // Firestore Listener
-        const q = query(collection(db, "gear"), orderBy("category"));
-        onSnapshot(q, (snapshot) => { 
-            window.appData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
-            renderList();
-        });
+        window.clearSelection = () => {
+            if(Object.keys(window.cart).length === 0) return;
+            if(!confirm("Clear all selected items?")) return;
+            window.cart = {}; saveCartLocally(); updateCartBadge(); updateClearButton(); renderList();
+        }
+        
+        function updateClearButton() {
+            const hasItems = Object.keys(window.cart).length > 0;
+            const btn = document.getElementById('deselectBtn');
+            if(btn) btn.style.display = hasItems ? 'block' : 'none';
+        }
+
+        window.renderList = function() {
+            const listContainer = document.getElementById('inventory-list');
+            listContainer.innerHTML = '';
+            const query = document.getElementById('searchBox').value.toLowerCase();
+            const filteredItems = window.appData.filter(item => {
+                const matchesSearch = (item.desc || "").toLowerCase().includes(query) || (item.category || "").toLowerCase().includes(query);
+                let matchesType = false;
+                if(window.currentTypeFilter === 'ALL') matchesType = true;
+                else {
+                    let itemType = (item.type || "").toUpperCase(); 
+                    if(window.currentTypeFilter === itemType) matchesType = true;
+                    else if(window.currentTypeFilter === 'CAMERAS' && itemType === 'CAMERA') matchesType = true;
+                    else if(window.currentTypeFilter === 'GRIP' && itemType === 'GRIP') matchesType = true;
+                    else if(window.currentTypeFilter === itemType) matchesType = true;
+                }
+                return matchesSearch && matchesType;
+            });
+
+            // Smart Filter
+            const finalFiltered = filteredItems.filter(item => {
+                if (window.currentTypeFilter === 'ALL') return true;
+                const txt = (item.category + " " + item.desc).toUpperCase();
+                if (window.currentTypeFilter === 'CAMERAS') return (item.type === 'Camera' && !txt.includes('LENS') && !txt.includes('FILTER') && !txt.includes('MONITOR') && !txt.includes('BATTERY'));
+                if (window.currentTypeFilter === 'LENSES') return txt.includes('LENS');
+                if (window.currentTypeFilter === 'MONITORS') return txt.includes('MONITOR');
+                if (window.currentTypeFilter === 'BATTERIES') return txt.includes('BATTERY') || txt.includes('CHARGER');
+                if (window.currentTypeFilter === 'FILTERS') return txt.includes('FILTER') || txt.includes('ND') || txt.includes('POLA');
+                if (window.currentTypeFilter === 'TRIPODS') return txt.includes('TRIPOD') || txt.includes('HEAD');
+                if (window.currentTypeFilter === 'GRIP') return item.type === 'Grip';
+                if (window.currentTypeFilter === 'AUDIO') return item.type === 'Audio';
+                if (window.currentTypeFilter === 'LIGHTING') return item.type === 'Lighting';
+                return false;
+            });
+
+            finalFiltered.forEach(item => {
+                const id = item.id; 
+                const isSelected = window.cart.hasOwnProperty(id); 
+                const isRented = item.status === "OUT";
+                const el = document.createElement('div'); 
+                el.className = `inventory-item ${isSelected ? 'selected' : ''} ${isRented ? 'rented' : ''}`;
+                
+                let imageHTML = `<div class="item-thumb">📷</div>`; 
+                if(item.image) { imageHTML = `<div class="item-thumb"><img src="${item.image}"></div>`; }
+                
+                let checkInBtn = isRented ? `<button class="checkin-btn" onclick="checkInItem('${id}', event)">Check In</button>` : "";
+                let statusBadge = isRented ? `<span class="qty-badge" style="background:var(--danger); color:white;">OUT</span>` : `<span class="qty-badge">Qty: ${item.qty}</span>`;
+
+                el.innerHTML = `
+                    <div class="check-circle" onclick="toggleSelection('${id}')"></div>
+                    ${imageHTML}
+                    <div class="item-content-clickable" onclick="toggleSelection('${id}')">
+                        <div class="item-category">${item.category}</div>
+                        <div class="item-name">${item.desc}</div>
+                        <div class="item-meta">${statusBadge} <span>SN: ${item.sn}</span></div>
+                    </div>
+                    ${checkInBtn}
+                    <div class="edit-btn admin-only" onclick="openModal('${id}')">✎</div>
+                `;
+                listContainer.appendChild(el);
+            });
+            
+            // Admin visibility
+            if(!window.isAdmin) { document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none'); }
+            else { document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex'); }
+        }
+        
+        window.openModal = function(id) {
+            const modal = document.getElementById('itemModal'); const title = document.getElementById('modalTitle'); const imgPrev = document.getElementById('imagePreview');
+            document.getElementById('fileInput').value = ""; imgPrev.src = ""; imgPrev.style.display = "none"; document.getElementById('previewText').style.display = "block"; window.tempImageURL = "";
+            if (id === null) {
+                window.editingId = null; title.innerText = "Add New Item";
+                document.getElementById('itemType').value = "CAMERAS"; 
+            } else {
+                window.editingId = id; const item = window.appData.find(i => i.id === id); title.innerText = "Edit Item";
+                document.getElementById('itemType').value = "CAMERAS"; 
+                document.getElementById('itemCategory').value = item.category || "";
+                document.getElementById('itemDesc').value = item.desc || "";
+                document.getElementById('itemSerial').value = item.sn || "";
+                document.getElementById('itemQty').value = item.qty || 1;
+                if(item.image) { imgPrev.src = item.image; imgPrev.style.display = "block"; document.getElementById('previewText').style.display = "none"; window.tempImageURL = item.image; }
+            }
+            modal.style.display = 'flex';
+        }
+        
+        window.closeModal = () => document.getElementById('itemModal').style.display = 'none';
+        window.handleImageUpload = (input) => { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = (e) => { document.getElementById('imagePreview').src = e.target.result; document.getElementById('imagePreview').style.display = 'block'; document.getElementById('previewText').style.display = 'none'; window.tempImageURL = e.target.result; }; reader.readAsDataURL(input.files[0]); } };
+        window.toggleSelection = (id) => { if (window.cart.hasOwnProperty(id)) { delete window.cart[id]; } else { window.cart[id] = { qty: 1, notes: "" }; } saveCartLocally(); renderList(); updateCartBadge(); updateClearButton(); };
+        window.filterType = (type, btn) => { window.currentTypeFilter = type; document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderList(); };
+        window.handleSearch = () => { const val = document.getElementById('searchBox').value; document.getElementById('clearBtn').style.display = val.length > 0 ? 'flex' : 'none'; renderList(); };
+        window.clearSearch = () => { document.getElementById('searchBox').value = ''; handleSearch(); };
+        window.switchTab = (viewId, navItem) => { 
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); 
+            document.getElementById(viewId).classList.add('active'); 
+            if(navItem) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); navItem.classList.add('active'); }
+            const controls = document.getElementById('top-controls'); 
+            if(viewId === 'view-checkout' || viewId === 'view-receipt') { controls.style.display = 'none'; renderManifest(); } else { controls.style.display = 'block'; }
+            if(viewId === 'view-checkout') renderManifest(); 
+        };
+        window.updateCartBadge = () => { const count = Object.keys(window.cart).length; document.getElementById('cart-badge').innerText = count; document.getElementById('cart-badge').style.display = count > 0 ? 'block' : 'none'; };
+        window.adjustQty = (id, change) => { if(!window.cart[id]) return; const item = window.appData.find(i => i.id === id); const maxQty = parseInt(item.qty) || 1; let newQty = window.cart[id].qty + change; if (newQty < 1) newQty = 1; if (newQty > maxQty) newQty = maxQty; window.cart[id].qty = newQty; saveCartLocally(); renderManifest(); };
+        window.removeFromCart = (id) => { delete window.cart[id]; saveCartLocally(); updateCartBadge(); updateClearButton(); renderManifest(); renderList(); };
+        window.updateCartItem = (id, field, value) => { if (window.cart[id]) window.cart[id][field] = value; saveCartLocally(); };
+        
+        window.renderManifest = () => {
+            const container = document.getElementById('selected-items-container');
+            container.innerHTML = '';
+            const cartIds = Object.keys(window.cart);
+            if(cartIds.length === 0) { container.innerHTML = '<div style="padding:20px; text-align:center; color:var(--gray);">Cart is empty.</div>'; return; }
+            const cartItems = window.appData.filter(item => window.cart.hasOwnProperty(item.id));
+            cartItems.forEach(item => {
+                const cartData = window.cart[item.id];
+                const row = document.createElement('div');
+                row.className = 'manifest-item';
+                row.innerHTML = `<div class="manifest-top"><div><div style="font-size:11px; font-weight:700; color:var(--primary);">${item.category}</div><div style="font-weight:600; color:var(--text);">${item.desc}</div></div><div class="remove-btn" onclick="removeFromCart('${item.id}')">✕</div></div><div class="manifest-controls"><div class="stepper"><button class="stepper-btn" onclick="adjustQty('${item.id}', -1)">-</button><div class="stepper-val">${cartData.qty}</div><button class="stepper-btn" onclick="adjustQty('${item.id}', 1)">+</button></div><input type="text" class="condition-input" value="${cartData.notes}" placeholder="Condition / Notes" oninput="updateCartItem('${item.id}', 'notes', this.value)"></div>`;
+                container.appendChild(row);
+            });
+        }
     </script>
 </body>
 </html>
